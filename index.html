@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="ต้นแบบระบบรวมขยะรีไซเคิลที่จุดทิ้งเดินถึง — สะสมให้ถึง 15 กก. เพื่อให้ซาเล้งคุ้มค่ามารับ">
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+</style>
+<title>Bangkok Waste Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+  :root{
+    --ground:#EDF0EC; --canvas:#FBFCFA; --surface:#FFFFFF; --sunken:#F0F3EF;
+    --line:#DCE2DA; --line-strong:#C6CFC3;
+    --ink:#141B17; --ink-2:#3A4741; --muted:#68766E;
+    --accent:#0F9D6B; --accent-ink:#0A6B49; --accent-soft:#E0F2EA;
+    --warn:#A8681A; --warn-soft:#F8EEDB;
+    --mat-pet:#0F9D6B; --mat-alu:#4E96A8; --mat-card:#B08A57; --mat-glass:#8C93A3;
+    --shadow:0 1px 2px rgba(20,27,23,.05), 0 8px 24px -16px rgba(20,27,23,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#080B0A; --canvas:#111715; --surface:#19211E; --sunken:#131A18;
+      --line:#28322E; --line-strong:#38443F;
+      --ink:#E9EFEB; --ink-2:#C2CEC7; --muted:#8B9A92;
+      --accent:#35C596; --accent-ink:#7FE2C0; --accent-soft:#123328;
+      --warn:#DDA65A; --warn-soft:#2C2314;
+      --mat-pet:#35C596; --mat-alu:#6DB4C6; --mat-card:#C7A375; --mat-glass:#9AA2B2;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#080B0A; --canvas:#111715; --surface:#19211E; --sunken:#131A18;
+    --line:#28322E; --line-strong:#38443F;
+    --ink:#E9EFEB; --ink-2:#C2CEC7; --muted:#8B9A92;
+    --accent:#35C596; --accent-ink:#7FE2C0; --accent-soft:#123328;
+    --warn:#DDA65A; --warn-soft:#2C2314;
+    --mat-pet:#35C596; --mat-alu:#6DB4C6; --mat-card:#C7A375; --mat-glass:#9AA2B2;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:'IBM Plex Sans Thai','Segoe UI',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .disp{ font-family:'Anuphan','IBM Plex Sans Thai',system-ui,sans-serif; text-wrap:balance; }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+
+  .frame{ background:var(--canvas); max-width:430px; margin:0 auto; min-height:100vh; }
+  .desknote{ display:none; }
+  @media (min-width:820px){
+    body{ display:grid; place-items:center; padding:28px 20px; }
+    .frame{ height:min(860px, calc(100vh - 90px)); min-height:0; overflow-y:auto; overscroll-behavior:contain;
+      border:1px solid var(--line-strong); border-radius:30px; box-shadow:0 30px 70px -30px rgba(0,0,0,.45); }
+    .frame::-webkit-scrollbar{ width:0; }
+    .desknote{ display:block; }
+  }
+
+  .seg{ transition:width .55s cubic-bezier(.22,.7,.24,1); }
+  .marker{ transition:left .55s cubic-bezier(.22,.7,.24,1); }
+  .pop{ animation:pop .4s cubic-bezier(.2,.9,.3,1.2); }
+  @keyframes pop{ from{ transform:scale(.94); opacity:0 } to{ transform:scale(1); opacity:1 } }
+  .rise{ animation:rise .3s ease-out both; }
+  @keyframes rise{ from{ transform:translateY(6px); opacity:0 } to{ transform:none; opacity:1 } }
+  .pulse-dot{ animation:pd 1.6s ease-in-out infinite; }
+  @keyframes pd{ 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:10px; }
+  table{ border-collapse:collapse; }
+</style>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    ground:'var(--ground)', canvas:'var(--canvas)', surface:'var(--surface)', sunken:'var(--sunken)',
+    line:'var(--line)', lineStrong:'var(--line-strong)',
+    ink:'var(--ink)', ink2:'var(--ink-2)', muted:'var(--muted)',
+    accent:'var(--accent)', accentInk:'var(--accent-ink)', accentSoft:'var(--accent-soft)',
+    warn:'var(--warn)', warnSoft:'var(--warn-soft)'
+  }, boxShadow:{ card:'var(--shadow)' } } } };
+</script>
+
+</head>
+<body>
+<div class="frame">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-20 bg-canvas/95 backdrop-blur border-b border-line">
+    <div class="px-5 pt-4 pb-3 flex items-start justify-between gap-3">
+      <div>
+        <div class="disp text-[17px] font-bold leading-tight">Bangkok Waste Lab</div>
+        <div class="text-[12.5px] text-muted leading-tight">จุดทิ้งที่คนใช้จริง · เขตปทุมวัน</div>
+      </div>
+      <div class="text-right shrink-0">
+        <div class="eyebrow">Threshold</div>
+        <div class="mono text-[13px] font-medium" style="color:var(--accent-ink)">15 kg</div>
+      </div>
+    </div>
+    <div class="px-5 pb-3">
+      <div role="tablist" aria-label="สลับบทบาท" class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-sunken border border-line">
+        <button role="tab" aria-selected="true" data-role="resident"
+          class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
+          <span class="block leading-tight">น้องปุ๊ก · ผู้ทิ้ง</span>
+          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Resident</span>
+        </button>
+        <button role="tab" aria-selected="false" data-role="collector"
+          class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
+          <span class="block leading-tight">พี่สมชาย · ซาเล้ง</span>
+          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Collector</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Resident view -->
+  <main id="view-resident" class="px-5 py-5 flex flex-col gap-6">
+
+    <section class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between">
+        <h2 class="eyebrow">จุดรวมใกล้ที่สุด</h2>
+        <span class="text-[11px] text-muted">เดินได้ &lt; 200 ม.</span>
+      </div>
+
+      <article class="rounded-2xl bg-surface border border-line shadow-card overflow-hidden">
+        <div class="p-5 flex flex-col gap-4">
+
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h3 class="disp text-[19px] font-bold leading-snug">จุดรวม ซอยจุฬาฯ 12</h3>
+              <p class="text-[12.5px] text-muted leading-snug">ข้างร้านซัก 24 ชม. · เปิด 06:00–22:00</p>
+            </div>
+            <span class="shrink-0 mono text-[11.5px] px-2.5 py-1 rounded-full bg-sunken border border-line text-ink2">140 ม. · เดิน 2 น.</span>
+          </div>
+
+          <div class="flex flex-col gap-2.5">
+            <div class="flex items-end justify-between gap-3">
+              <div class="flex items-baseline gap-1.5">
+                <span id="r-kg" class="mono text-[34px] font-medium leading-none tracking-tight">12.0</span>
+                <span class="mono text-[15px] text-muted leading-none">/ 15 kg</span>
+              </div>
+              <span id="r-pill" class="text-[11.5px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"></span>
+            </div>
+
+            <div class="relative pt-4">
+              <div id="r-marker" class="marker absolute top-0 bottom-0" style="left:75%">
+                <span class="mono text-[9.5px] text-muted whitespace-nowrap absolute top-0 left-0 -translate-x-1/2">15 kg</span>
+                <span class="absolute top-[14px] bottom-0 w-px" style="background:var(--line-strong)"></span>
+              </div>
+              <div class="relative h-3.5 rounded-full bg-sunken border border-line overflow-hidden flex">
+                <div id="seg-pet"  class="seg h-full" style="width:26%;background:var(--mat-pet)"></div>
+                <div id="seg-alu"  class="seg h-full" style="width:8%;background:var(--mat-alu)"></div>
+                <div id="seg-card" class="seg h-full" style="width:26%;background:var(--mat-card)"></div>
+              </div>
+            </div>
+
+            <p id="r-status" class="text-[13px] leading-snug"></p>
+            <p id="r-status-en" class="text-[11.5px] text-muted leading-snug"></p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 border-t border-line">
+            <div class="pt-3 flex flex-col gap-1">
+              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-pet)"></i>PET ใส</span>
+              <span id="lg-pet" class="mono text-[13px]">5.2 kg</span>
+            </div>
+            <div class="pt-3 flex flex-col gap-1">
+              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-alu)"></i>อะลูมิเนียม</span>
+              <span id="lg-alu" class="mono text-[13px]">1.6 kg</span>
+            </div>
+            <div class="pt-3 flex flex-col gap-1">
+              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-card)"></i>กระดาษลัง</span>
+              <span id="lg-card" class="mono text-[13px]">5.2 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-5 pb-5">
+          <button id="btn-add" class="w-full rounded-xl px-4 py-3 text-left transition-transform active:scale-[.985]"
+            style="background:var(--accent); color:#fff">
+            <span class="flex items-center justify-between gap-3">
+              <span class="disp text-[15px] font-semibold">+ เพิ่มขยะของฉัน (2 kg)</span>
+              <span class="mono text-[11px] opacity-80">Add my waste</span>
+            </span>
+            <span class="block mt-0.5 text-[11px] opacity-85">3 ถุงแยกจากหอ · PET 0.8 · อะลูฯ 0.3 · กระดาษ 0.9</span>
+          </button>
+          <p id="r-mine" class="mt-2 text-[11.5px] text-muted text-center">วันนี้คุณยังไม่ได้เพิ่มขยะเข้าจุดนี้</p>
+        </div>
+
+        <div id="r-badge" class="hidden mx-5 mb-5 rounded-xl px-4 py-3" style="background:var(--accent-soft)">
+          <p class="disp text-[14px] font-semibold" style="color:var(--accent-ink)">🎉 ครบเกณฑ์แล้ว! แจ้งซาเล้งในพื้นที่เรียบร้อย</p>
+          <p class="text-[11.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">Threshold met! Local Saleng notified.</p>
+        </div>
+        <div id="r-enroute" class="hidden mx-5 mb-5 rounded-xl px-4 py-3 border border-line bg-sunken">
+          <p class="text-[13.5px] font-semibold">🛺 พี่สมชายรับงานแล้ว · ถึงจุดใน <span id="r-eta" class="mono">7</span> นาที</p>
+          <p class="text-[11.5px] text-muted mt-0.5">Saleng en route — ยกถุงไปวางได้เลย ไม่ต้องเฝ้าที่จุด</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">จุดอื่นที่เดินไหว</h2>
+      <ul id="r-others" class="flex flex-col gap-2"></ul>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="eyebrow">ราคากลางรับซื้อ</h2>
+        <span class="text-[11px] text-muted">อัปเดต 4 ก.ย. 2569</span>
+      </div>
+      <div class="rounded-2xl bg-surface border border-line shadow-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-[13px]">
+            <thead>
+              <tr class="text-left" style="background:var(--sunken)">
+                <th class="font-semibold px-4 py-2.5 text-[11px] tracking-wide uppercase text-muted">วัสดุ</th>
+                <th class="font-semibold px-3 py-2.5 text-[11px] tracking-wide uppercase text-muted text-right">บาท / กก.</th>
+                <th class="font-semibold px-4 py-2.5 text-[11px] tracking-wide uppercase text-muted text-right">7 วัน</th>
+              </tr>
+            </thead>
+            <tbody id="price-body"></tbody>
+          </table>
+        </div>
+        <div class="px-4 py-3 border-t border-line flex items-center justify-between gap-3" style="background:var(--sunken)">
+          <div>
+            <p class="text-[11.5px] text-muted leading-tight">ขยะที่คุณเพิ่มวันนี้</p>
+            <p id="r-myvalue" class="mono text-[14px] font-medium leading-tight">0.0 kg ≈ ฿0</p>
+          </div>
+          <p class="text-[10.5px] text-muted text-right max-w-[190px] leading-snug">ใช้เทียบว่าซาเล้งให้ราคายุติธรรมไหม อ้างอิงร้านของเก่าย่านสามย่าน</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="text-[11px] text-muted leading-relaxed pb-2">
+      ทำไมต้องรวมกัน: ขยะจากห้องเดียวน้อยเกินกว่าที่ซาเล้งจะคุ้มค่าน้ำมันมารับ การรวมกันที่จุดเดินถึงทำให้ปริมาณแตะเกณฑ์เรียกรถได้จริง
+    </p>
+  </main>
+
+  <!-- Collector view -->
+  <main id="view-collector" class="hidden px-5 py-5 flex-col gap-6">
+
+    <section class="grid grid-cols-3 gap-2">
+      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
+        <span class="text-[10.5px] text-muted leading-tight">งานพร้อมเก็บ</span>
+        <span id="c-jobs" class="mono text-[20px] font-medium leading-none">2</span>
+      </div>
+      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
+        <span class="text-[10.5px] text-muted leading-tight">น้ำหนักรวม</span>
+        <span id="c-kg" class="mono text-[20px] font-medium leading-none">40.2</span>
+      </div>
+      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
+        <span class="text-[10.5px] text-muted leading-tight">ประเมินได้</span>
+        <span id="c-baht" class="mono text-[20px] font-medium leading-none" style="color:var(--accent-ink)">฿470</span>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="eyebrow">คิวงานคุ้มค่า</h2>
+        <span class="text-[11px] text-muted">เรียงตามมูลค่า · รัศมี 3 กม.</span>
+      </div>
+      <ul id="c-feed" class="flex flex-col gap-3"></ul>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">ยังไม่ถึงเกณฑ์ · รอปริมาณ</h2>
+      <ul id="c-waiting" class="flex flex-col gap-2"></ul>
+      <p class="text-[11px] text-muted leading-relaxed pb-2">
+        ระบบจะแจ้งเตือนอัตโนมัติเมื่อจุดใดแตะ 15 กก. ตัวเลขรายได้เป็นราคากลางก่อนหักค่าน้ำมันประมาณ ฿30 ต่อเที่ยว
+      </p>
+    </section>
+  </main>
+</div>
+
+<p class="desknote text-center text-[11.5px] text-muted mt-4">
+  ต้นแบบเชิงโต้ตอบ · สลับบทบาทที่หัวจอ — ขยะที่น้องปุ๊กเพิ่ม จะไปโผล่ในคิวงานของซาเล้งทันที
+</p>
+
+<script>
+(function(){
+  var THRESHOLD = 15;
+
+  var MATS = {
+    pet:   { th:'ขวด PET ใส',         en:'PET bottles',    price:9.50,  trend:0.40 },
+    alu:   { th:'กระป๋องอะลูมิเนียม', en:'Aluminium cans', price:48.00, trend:-1.50 },
+    card:  { th:'กระดาษลัง',          en:'Cardboard',      price:3.20,  trend:0.15 },
+    glass: { th:'ขวดแก้วใส',          en:'Clear glass',    price:1.20,  trend:0, note:'รับเฉพาะบางจุด' }
+  };
+
+  var MY_BAGS = { pet:0.8, alu:0.3, card:0.9 };
+
+  var points = [
+    { id:'p1', name:'จุดรวม ซอยจุฬาฯ 12',       place:'ข้างร้านซัก 24 ชม.',  walkM:140,  driveKm:0.9, mix:{pet:5.2, alu:1.6, card:5.2},  job:null },
+    { id:'p2', name:'จุดรวม หอพักสวนหลวง',       place:'ลานจอดรถ อาคาร B',    walkM:320,  driveKm:1.4, mix:{pet:6.4, alu:2.2, card:7.8},  job:null },
+    { id:'p3', name:'จุดรวม ตลาดสามย่าน ล็อค B', place:'หลังแผงผลไม้',        walkM:850,  driveKm:2.1, mix:{pet:8.1, alu:3.4, card:12.3}, job:null },
+    { id:'p4', name:'จุดรวม ซอยเจริญเมือง 4',    place:'หน้าร้านกาแฟหัวซอย',  walkM:540,  driveKm:1.8, mix:{pet:2.6, alu:0.9, card:4.0},  job:null },
+    { id:'p5', name:'จุดรวม ชุมชนบ้านครัวใต้',   place:'ศาลาริมคลอง',         walkM:1600, driveKm:3.2, mix:{pet:3.1, alu:1.2, card:5.9},  job:null }
+  ];
+
+  var home = points[0];
+  var mine = { count:0 };
+
+  function kgOf(p){ return Math.round((p.mix.pet + p.mix.alu + p.mix.card) * 10) / 10; }
+  function bahtOf(p){ return p.mix.pet*MATS.pet.price + p.mix.alu*MATS.alu.price + p.mix.card*MATS.card.price; }
+  function round5(n){ return Math.round(n/5)*5; }
+  function etaOf(p){ return Math.round(p.driveKm*4 + 3); }
+  function distLabel(m){ return m >= 1000 ? (m/1000).toFixed(1)+' กม.' : m+' ม.'; }
+  function isReady(p){ return kgOf(p) >= THRESHOLD; }
+
+  var views = { resident: document.getElementById('view-resident'), collector: document.getElementById('view-collector') };
+  var frame = document.querySelector('.frame');
+  var role = 'resident';
+
+  function setRole(next){
+    role = next;
+    Object.keys(views).forEach(function(key){
+      var on = key === next;
+      views[key].classList.toggle('hidden', !on);
+      views[key].classList.toggle('flex', on);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.role-btn'), function(btn){
+      var on = btn.dataset.role === next;
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+      btn.style.background = on ? 'var(--surface)' : 'transparent';
+      btn.style.color      = on ? 'var(--ink)' : 'var(--muted)';
+      btn.style.boxShadow  = on ? 'var(--shadow)' : 'none';
+    });
+    frame.scrollTop = 0;
+    render();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.role-btn'), function(b){
+    b.addEventListener('click', function(){ setRole(b.dataset.role); });
+  });
+
+  function renderResident(){
+    var kg = kgOf(home);
+    var max = Math.max(20, Math.ceil(kg/5)*5);
+    var met = kg >= THRESHOLD;
+
+    document.getElementById('r-kg').textContent = kg.toFixed(1);
+    document.getElementById('seg-pet').style.width  = (home.mix.pet/max*100)  + '%';
+    document.getElementById('seg-alu').style.width  = (home.mix.alu/max*100)  + '%';
+    document.getElementById('seg-card').style.width = (home.mix.card/max*100) + '%';
+    document.getElementById('r-marker').style.left  = (THRESHOLD/max*100) + '%';
+
+    document.getElementById('lg-pet').textContent  = home.mix.pet.toFixed(1)  + ' kg';
+    document.getElementById('lg-alu').textContent  = home.mix.alu.toFixed(1)  + ' kg';
+    document.getElementById('lg-card').textContent = home.mix.card.toFixed(1) + ' kg';
+
+    var pill = document.getElementById('r-pill');
+    if (met){
+      pill.textContent = 'พร้อมให้ซาเล้งมารับ';
+      pill.style.background = 'var(--accent-soft)';
+      pill.style.color = 'var(--accent-ink)';
+    } else {
+      pill.textContent = 'กำลังสะสม';
+      pill.style.background = 'var(--warn-soft)';
+      pill.style.color = 'var(--warn)';
+    }
+
+    var short = Math.round((THRESHOLD - kg) * 10) / 10;
+    var status = document.getElementById('r-status');
+    var statusEn = document.getElementById('r-status-en');
+    if (short > 0){
+      status.innerHTML = 'ขาดอีก <b class="mono">' + short.toFixed(1) + ' kg</b> ก่อนระบบจะเรียกซาเล้งเข้ามาเก็บ';
+      status.style.color = 'var(--ink)';
+      statusEn.textContent = short.toFixed(1) + ' kg needed until a Saleng pickup is triggered.';
+    } else {
+      var over = Math.round((kg - THRESHOLD) * 10) / 10;
+      status.innerHTML = 'ถึงเกณฑ์เรียกรถแล้ว เกินมา <b class="mono">' + over.toFixed(1) + ' kg</b> · ทิ้งเพิ่มได้ถึง 22:00 น.';
+      status.style.color = 'var(--accent-ink)';
+      statusEn.textContent = 'Pickup threshold reached — the point stays open for more drop-offs.';
+    }
+
+    document.getElementById('r-badge').classList.toggle('hidden', !met);
+
+    var enroute = document.getElementById('r-enroute');
+    enroute.classList.toggle('hidden', home.job !== 'enroute');
+    if (home.job === 'enroute') document.getElementById('r-eta').textContent = etaOf(home);
+
+    var mineEl = document.getElementById('r-mine');
+    if (mine.count === 0){
+      mineEl.textContent = 'วันนี้คุณยังไม่ได้เพิ่มขยะเข้าจุดนี้';
+    } else {
+      mineEl.innerHTML = 'คุณเพิ่มแล้ว <b class="mono">' + (mine.count*2).toFixed(1) + ' kg</b> วันนี้ · คิดเป็น ' +
+        Math.round(mine.count*2 / kg * 100) + '% ของกองนี้';
+    }
+
+    var myKg = mine.count * 2;
+    var myBaht = mine.count * (MY_BAGS.pet*MATS.pet.price + MY_BAGS.alu*MATS.alu.price + MY_BAGS.card*MATS.card.price);
+    document.getElementById('r-myvalue').textContent = myKg.toFixed(1) + ' kg ≈ ฿' + myBaht.toFixed(0);
+
+    document.getElementById('r-others').innerHTML = points.filter(function(p){
+      return p.id !== home.id && p.walkM <= 900;
+    }).sort(function(a,b){ return a.walkM - b.walkM; }).map(function(p){
+      var k = kgOf(p), pct = Math.min(100, k/THRESHOLD*100), ok = k >= THRESHOLD;
+      return '<li class="rounded-xl bg-surface border border-line px-4 py-3 flex items-center gap-3">' +
+        '<div class="flex-1 min-w-0">' +
+          '<p class="text-[13.5px] font-medium truncate">' + p.name + '</p>' +
+          '<p class="text-[11px] text-muted">' + distLabel(p.walkM) + ' · เดิน ' + Math.round(p.walkM/70) + ' น.</p>' +
+        '</div>' +
+        '<div class="w-20 shrink-0">' +
+          '<div class="h-1.5 rounded-full bg-sunken border border-line overflow-hidden">' +
+            '<div style="width:' + pct + '%;height:100%;background:' + (ok ? 'var(--accent)' : 'var(--warn)') + '"></div>' +
+          '</div>' +
+          '<p class="mono text-[10.5px] mt-1 text-right" style="color:' + (ok ? 'var(--accent-ink)' : 'var(--muted)') + '">' +
+            k.toFixed(1) + ' / 15 kg</p>' +
+        '</div>' +
+      '</li>';
+    }).join('');
+  }
+
+  function renderPrices(){
+    document.getElementById('price-body').innerHTML = Object.keys(MATS).map(function(k, i){
+      var m = MATS[k];
+      var flat = m.trend === 0, up = m.trend > 0;
+      var col = flat ? 'var(--muted)' : (up ? 'var(--accent-ink)' : 'var(--warn)');
+      var sign = flat ? '±0.00' : (up ? '▲ +' : '▼ −') + Math.abs(m.trend).toFixed(2);
+      return '<tr' + (i ? ' class="border-t border-line"' : '') + '>' +
+        '<td class="px-4 py-3">' +
+          '<span class="flex items-center gap-2">' +
+            '<i class="w-2 h-2 rounded-sm shrink-0" style="background:var(--mat-' + k + ')"></i>' +
+            '<span><span class="block leading-tight">' + m.th + '</span>' +
+            '<span class="block text-[10.5px] text-muted leading-tight">' + m.en + (m.note ? ' · ' + m.note : '') + '</span></span>' +
+          '</span>' +
+        '</td>' +
+        '<td class="px-3 py-3 mono text-right">' + m.price.toFixed(2) + '</td>' +
+        '<td class="px-4 py-3 mono text-[11.5px] text-right" style="color:' + col + '">' + sign + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function jobCard(p){
+    var kg = kgOf(p), val = bahtOf(p);
+    var lo = round5(val*0.86), hi = round5(val*1.06);
+    var enroute = p.job === 'enroute';
+    var fresh = p.id === home.id && mine.count > 0;
+
+    var chips = [['pet','PET'],['alu','อะลูฯ'],['card','กระดาษ']].map(function(pair){
+      return '<span class="mono text-[10.5px] px-2 py-0.5 rounded-md border border-line bg-sunken">' +
+        '<i class="inline-block w-1.5 h-1.5 rounded-sm mr-1 align-middle" style="background:var(--mat-' + pair[0] + ')"></i>' +
+        pair[1] + ' ' + p.mix[pair[0]].toFixed(1) + '</span>';
+    }).join('');
+
+    var action = enroute
+      ? '<div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3" style="background:var(--accent-soft)">' +
+          '<span class="text-[13px] font-semibold" style="color:var(--accent-ink)">' +
+            '<i class="pulse-dot inline-block w-2 h-2 rounded-full mr-1.5 align-middle" style="background:var(--accent)"></i>' +
+            'กำลังไป · En Route · ถึงใน ' + etaOf(p) + ' นาที</span>' +
+          '<button data-act="cancel" data-id="' + p.id + '" class="text-[11.5px] underline underline-offset-2 shrink-0" style="color:var(--accent-ink)">ยกเลิก</button>' +
+        '</div>'
+      : '<button data-act="accept" data-id="' + p.id + '" class="w-full rounded-xl py-3 text-[14px] font-semibold transition-transform active:scale-[.985]" ' +
+          'style="background:var(--accent);color:#fff">รับงาน &amp; เริ่มนำทาง · Accept Pickup</button>';
+
+    return '<li class="rise rounded-2xl bg-surface shadow-card overflow-hidden border" style="border-color:' +
+        (enroute ? 'var(--accent)' : 'var(--line)') + '">' +
+      '<div class="p-4 flex flex-col gap-3">' +
+        '<div class="flex items-start justify-between gap-3">' +
+          '<div class="min-w-0">' +
+            '<h3 class="disp text-[16px] font-bold leading-snug">' + p.name + '</h3>' +
+            '<p class="text-[11.5px] text-muted leading-snug">' + p.place + ' · ขับ ' + p.driveKm.toFixed(1) + ' กม. · ' + etaOf(p) + ' นาที</p>' +
+          '</div>' +
+          '<span class="shrink-0 text-[10.5px] font-semibold px-2 py-1 rounded-full whitespace-nowrap" ' +
+            'style="background:var(--accent-soft);color:var(--accent-ink)">คุ้มค่าเที่ยว &gt;15 kg</span>' +
+        '</div>' +
+        (fresh ? '<p class="text-[11px] rounded-lg px-2.5 py-1.5" style="background:var(--warn-soft);color:var(--warn)">อัปเดตใหม่ · มีคนทิ้งเพิ่มที่จุดนี้เมื่อสักครู่</p>' : '') +
+        '<div class="flex items-end justify-between gap-3">' +
+          '<div>' +
+            '<p class="text-[10.5px] text-muted leading-tight">ปริมาณสะสม</p>' +
+            '<p class="mono text-[24px] font-medium leading-none">' + kg.toFixed(1) + ' <span class="text-[13px] text-muted">kg</span></p>' +
+          '</div>' +
+          '<div class="text-right">' +
+            '<p class="text-[10.5px] text-muted leading-tight">ประเมินรายได้</p>' +
+            '<p class="mono text-[18px] font-medium leading-tight" style="color:var(--accent-ink)">฿' + lo + '–' + hi + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="flex flex-wrap gap-1.5">' + chips + '</div>' +
+      '</div>' +
+      '<div class="px-4 pb-4">' + action + '</div>' +
+    '</li>';
+  }
+
+  function waitingRow(p){
+    var kg = kgOf(p), short = (THRESHOLD - kg).toFixed(1);
+    return '<li class="rounded-xl border border-line px-4 py-3 flex items-center justify-between gap-3" style="background:var(--sunken)">' +
+      '<div class="min-w-0">' +
+        '<p class="text-[13px] font-medium truncate">' + p.name + '</p>' +
+        '<p class="text-[11px] text-muted">ขับ ' + p.driveKm.toFixed(1) + ' กม. · ขาดอีก ' + short + ' kg</p>' +
+      '</div>' +
+      '<span class="mono text-[12px] shrink-0 text-muted">' + kg.toFixed(1) + ' / 15</span>' +
+    '</li>';
+  }
+
+  function renderCollector(){
+    var jobs = points.filter(isReady).sort(function(a,b){
+      if ((a.job === 'enroute') !== (b.job === 'enroute')) return a.job === 'enroute' ? -1 : 1;
+      return bahtOf(b) - bahtOf(a);
+    });
+    var waiting = points.filter(function(p){ return !isReady(p); })
+      .sort(function(a,b){ return kgOf(b) - kgOf(a); });
+
+    document.getElementById('c-jobs').textContent = jobs.length;
+    document.getElementById('c-kg').textContent = jobs.reduce(function(s,p){ return s + kgOf(p); }, 0).toFixed(1);
+    document.getElementById('c-baht').textContent = '฿' + round5(jobs.reduce(function(s,p){ return s + bahtOf(p); }, 0));
+
+    document.getElementById('c-feed').innerHTML = jobs.length
+      ? jobs.map(jobCard).join('')
+      : '<li class="rounded-xl border border-line px-4 py-6 text-center text-[12.5px] text-muted" style="background:var(--sunken)">ยังไม่มีจุดไหนแตะ 15 กก. ตอนนี้</li>';
+    document.getElementById('c-waiting').innerHTML = waiting.length
+      ? waiting.map(waitingRow).join('')
+      : '<li class="rounded-xl border border-line px-4 py-4 text-center text-[12px] text-muted" style="background:var(--sunken)">ทุกจุดถึงเกณฑ์หมดแล้ว</li>';
+  }
+
+  document.getElementById('c-feed').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var p = points.filter(function(x){ return x.id === btn.dataset.id; })[0];
+    p.job = btn.dataset.act === 'accept' ? 'enroute' : null;
+    renderCollector();
+  });
+
+  document.getElementById('btn-add').addEventListener('click', function(){
+    var wasMet = kgOf(home) >= THRESHOLD;
+    home.mix.pet  = Math.round((home.mix.pet  + MY_BAGS.pet)  * 10) / 10;
+    home.mix.alu  = Math.round((home.mix.alu  + MY_BAGS.alu)  * 10) / 10;
+    home.mix.card = Math.round((home.mix.card + MY_BAGS.card) * 10) / 10;
+    mine.count++;
+    render();
+    if (!wasMet && kgOf(home) >= THRESHOLD){
+      var badge = document.getElementById('r-badge');
+      badge.classList.remove('pop');
+      void badge.offsetWidth;
+      badge.classList.add('pop');
+    }
+  });
+
+  function render(){
+    if (role === 'resident') renderResident(); else renderCollector();
+  }
+
+  renderPrices();
+  setRole('resident');
+})();
+</script>
+</body>
+</html>
