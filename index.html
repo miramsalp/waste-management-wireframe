@@ -5,81 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="ต้นแบบระบบรวมขยะรีไซเคิลที่จุดทิ้งเดินถึง — สะสมให้ถึง 15 กก. เพื่อให้ซาเล้งคุ้มค่ามารับ">
-<style>
-  *{ box-sizing:border-box; }
-  body{ margin:0; }
-  img{ max-width:100%; }
-  [hidden]{ display:none !important; }
-</style>
 <title>Bangkok Waste Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<style>
-  :root{
-    --ground:#EDF0EC; --canvas:#FBFCFA; --surface:#FFFFFF; --sunken:#F0F3EF;
-    --line:#DCE2DA; --line-strong:#C6CFC3;
-    --ink:#141B17; --ink-2:#3A4741; --muted:#68766E;
-    --accent:#0F9D6B; --accent-ink:#0A6B49; --accent-soft:#E0F2EA;
-    --warn:#A8681A; --warn-soft:#F8EEDB;
-    --mat-pet:#0F9D6B; --mat-alu:#4E96A8; --mat-card:#B08A57; --mat-glass:#8C93A3;
-    --shadow:0 1px 2px rgba(20,27,23,.05), 0 8px 24px -16px rgba(20,27,23,.28);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --ground:#080B0A; --canvas:#111715; --surface:#19211E; --sunken:#131A18;
-      --line:#28322E; --line-strong:#38443F;
-      --ink:#E9EFEB; --ink-2:#C2CEC7; --muted:#8B9A92;
-      --accent:#35C596; --accent-ink:#7FE2C0; --accent-soft:#123328;
-      --warn:#DDA65A; --warn-soft:#2C2314;
-      --mat-pet:#35C596; --mat-alu:#6DB4C6; --mat-card:#C7A375; --mat-glass:#9AA2B2;
-      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
-    }
-  }
-  :root[data-theme="dark"]{
-    --ground:#080B0A; --canvas:#111715; --surface:#19211E; --sunken:#131A18;
-    --line:#28322E; --line-strong:#38443F;
-    --ink:#E9EFEB; --ink-2:#C2CEC7; --muted:#8B9A92;
-    --accent:#35C596; --accent-ink:#7FE2C0; --accent-soft:#123328;
-    --warn:#DDA65A; --warn-soft:#2C2314;
-    --mat-pet:#35C596; --mat-alu:#6DB4C6; --mat-card:#C7A375; --mat-glass:#9AA2B2;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
-  }
-  html{ -webkit-text-size-adjust:100%; }
-  body{
-    background:var(--ground); color:var(--ink);
-    font-family:'IBM Plex Sans Thai','Segoe UI',system-ui,sans-serif;
-    min-height:100vh;
-  }
-  .disp{ font-family:'Anuphan','IBM Plex Sans Thai',system-ui,sans-serif; text-wrap:balance; }
-  .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
-  .eyebrow{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; }
-
-  .frame{ background:var(--canvas); max-width:430px; margin:0 auto; min-height:100vh; }
-  .desknote{ display:none; }
-  @media (min-width:820px){
-    body{ display:grid; place-items:center; padding:28px 20px; }
-    .frame{ height:min(860px, calc(100vh - 90px)); min-height:0; overflow-y:auto; overscroll-behavior:contain;
-      border:1px solid var(--line-strong); border-radius:30px; box-shadow:0 30px 70px -30px rgba(0,0,0,.45); }
-    .frame::-webkit-scrollbar{ width:0; }
-    .desknote{ display:block; }
-  }
-
-  .seg{ transition:width .55s cubic-bezier(.22,.7,.24,1); }
-  .marker{ transition:left .55s cubic-bezier(.22,.7,.24,1); }
-  .pop{ animation:pop .4s cubic-bezier(.2,.9,.3,1.2); }
-  @keyframes pop{ from{ transform:scale(.94); opacity:0 } to{ transform:scale(1); opacity:1 } }
-  .rise{ animation:rise .3s ease-out both; }
-  @keyframes rise{ from{ transform:translateY(6px); opacity:0 } to{ transform:none; opacity:1 } }
-  .pulse-dot{ animation:pd 1.6s ease-in-out infinite; }
-  @keyframes pd{ 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
-  @media (prefers-reduced-motion: reduce){
-    *{ animation:none !important; transition:none !important; }
-  }
-  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:10px; }
-  table{ border-collapse:collapse; }
-</style>
+<link rel="stylesheet" href="theme.css">
 <script>
   tailwind.config = { theme: { extend: { colors: {
     ground:'var(--ground)', canvas:'var(--canvas)', surface:'var(--surface)', sunken:'var(--sunken)',
@@ -91,7 +22,7 @@
 </script>
 
 </head>
-<body>
+<body class="app">
 <div class="frame">
 
   <!-- Header -->
@@ -107,17 +38,23 @@
       </div>
     </div>
     <div class="px-5 pb-3">
-      <div role="tablist" aria-label="สลับบทบาท" class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-sunken border border-line">
+      <div role="tablist" aria-label="สลับมุมมอง" class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-sunken border border-line">
         <button role="tab" aria-selected="true" data-role="resident"
           class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
-          <span class="block leading-tight">น้องปุ๊ก · ผู้ทิ้ง</span>
+          <span class="block leading-tight">ผู้ทิ้ง</span>
           <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Resident</span>
         </button>
         <button role="tab" aria-selected="false" data-role="collector"
           class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
-          <span class="block leading-tight">พี่สมชาย · ซาเล้ง</span>
+          <span class="block leading-tight">ซาเล้ง</span>
           <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Collector</span>
         </button>
+        <a href="wireframe.html"
+          class="rounded-lg py-2 text-[13px] font-semibold text-center no-underline transition-colors hover:text-ink"
+          style="color:var(--muted)">
+          <span class="block leading-tight">โครงร่าง ↗</span>
+          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Wireframe</span>
+        </a>
       </div>
     </div>
   </header>
@@ -278,10 +215,12 @@
       </p>
     </section>
   </main>
+
+  <!-- Wireframe view (non-functional mock) -->
 </div>
 
 <p class="desknote text-center text-[11.5px] text-muted mt-4">
-  ต้นแบบเชิงโต้ตอบ · สลับบทบาทที่หัวจอ — ขยะที่น้องปุ๊กเพิ่ม จะไปโผล่ในคิวงานของซาเล้งทันที
+  ต้นแบบเชิงโต้ตอบ · สลับมุมมองที่หัวจอ — ขยะที่ผู้ทิ้งเพิ่ม จะไปโผล่ในคิวงานของซาเล้งทันที · ดูโครงร่างทุกหน้าจอได้ที่แท็บ “โครงร่าง”
 </p>
 
 <script>
@@ -315,7 +254,10 @@
   function distLabel(m){ return m >= 1000 ? (m/1000).toFixed(1)+' กม.' : m+' ม.'; }
   function isReady(p){ return kgOf(p) >= THRESHOLD; }
 
-  var views = { resident: document.getElementById('view-resident'), collector: document.getElementById('view-collector') };
+  var views = {
+    resident:  document.getElementById('view-resident'),
+    collector: document.getElementById('view-collector')
+  };
   var frame = document.querySelector('.frame');
   var role = 'resident';
 
