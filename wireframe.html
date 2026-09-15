@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="โครงร่างหน้าจอ (wireframe) ของแอปเรียกซาเล้งเก็บขยะรีไซเคิล — 6 หน้าจอ ตั้งแต่เรียกรถจนจบงาน">
+<meta name="description" content="โครงร่างหน้าจอ (wireframe) รอบ 2 ของแอปเรียกซาเล้งเก็บขยะรีไซเคิล — 7 หน้าจอ แก้ตามฟีดแบ็กกลุ่ม">
 <title>Wireframe · Bangkok Waste Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,58 +27,356 @@
   <div class="mx-auto max-w-[1240px] px-5 pt-4 pb-3 flex flex-col gap-3">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <div class="disp text-[18px] font-bold leading-tight">โครงร่างหน้าจอ · Wireframe</div>
+        <div class="disp text-[18px] font-bold leading-tight">โครงร่างหน้าจอ · Wireframe <span class="text-muted font-semibold">รอบ 2</span></div>
         <div class="text-[12.5px] text-muted leading-snug">
-          Bangkok Waste Lab · 6 หน้าจอ ตั้งแต่ผู้ทิ้งเรียกซาเล้ง จนซาเล้งปิดงาน
+          Bangkok Waste Lab · แก้ตามฟีดแบ็กกลุ่ม · 7 หน้าจอ
         </div>
       </div>
       <a href="index.html" class="shrink-0 no-underline text-[12.5px] font-semibold px-3 py-2 rounded-xl border"
         style="border-color:var(--line-strong);background:var(--surface);color:var(--ink-2)">← ต้นแบบที่กดได้</a>
     </div>
-    <nav class="jump" aria-label="ข้ามไปยังหน้าจอ">
-      <a href="#s1">1 · แผนที่จุดรับ</a>
-      <a href="#s2">2 · ฟอร์มเรียกรถ</a>
-      <a href="#s3">3 · รอซาเล้งรับ</a>
-      <a href="#s4">4 · รายละเอียดงาน</a>
-      <a href="#s5">5 · ชั่งจริง</a>
-      <a href="#s6">6 · จบงาน</a>
+    <nav class="jump" aria-label="ข้ามไปยังส่วนต่าง ๆ">
+      <a href="#feedback">ฟีดแบ็ก → แก้อะไร</a>
+      <a href="#s1">1 · เรียกง่าย</a>
+      <a href="#s2">2 · ขยะน้อย</a>
+      <a href="#s3">3 · รอซาเล้ง</a>
+      <a href="#s4">4 · รอบคุ้ม</a>
+      <a href="#s5">5 · โหมดตัวใหญ่</a>
+      <a href="#s6">6 · ชั่ง &amp; จ่าย</a>
+      <a href="#s7">7 · จบงาน</a>
+      <a href="#numbers">ตัวเลขคุ้มไหม</a>
+      <a href="#research">คุยกับซาเล้ง</a>
     </nav>
   </div>
 </header>
 
-<div class="mx-auto max-w-[1240px] px-5 py-6 flex flex-col gap-6">
+<div class="mx-auto max-w-[1240px] px-5 py-6 flex flex-col gap-8">
 
   <p class="rounded-xl px-4 py-3 border border-dashed text-[12px] leading-relaxed text-ink2 max-w-[760px]"
     style="border-color:var(--line-strong);background:var(--sunken)">
     ภาพร่างหน้าจอเฉย ๆ · ยังกดไม่ได้ ยังไม่ต่อระบบจริง — ใช้คุยไอเดียว่าแต่ละหน้าจอต้องมีอะไรบ้าง
     <span class="block mt-1 text-muted">
       ไอเดีย: ซาเล้งได้เงินจากขยะรีไซเคิล (ขวด · ลัง · กระป๋อง) ถ้าบ้านไหนมีขยะทั่วไป/เศษอาหารด้วย
-      จ่ายค่าบริการเพิ่มให้ซาเล้งขนไปทิ้งที่จุดที่ กทม. จัดไว้
+      จ่ายค่าขนถุงละ ฿15 ให้ซาเล้งเอาไปทิ้งที่จุดที่ กทม. จัดไว้
     </span>
   </p>
 
+  <!-- FEEDBACK → CHANGES -->
+  <section id="feedback" class="phone-anchor flex flex-col gap-3">
+    <div>
+      <p class="eyebrow">รอบ 2</p>
+      <h2 class="disp text-[17px] font-bold leading-tight">ฟีดแบ็กจากกลุ่ม → แก้อะไรไปบ้าง</h2>
+      <p class="text-[12px] text-muted mt-0.5">กดเลขเพื่อกระโดดไปหน้าจอที่แก้</p>
+    </div>
+    <div class="grid gap-3 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
+
+      <article class="rounded-2xl border border-line bg-surface shadow-card p-3.5 flex flex-col gap-1.5">
+        <p class="eyebrow">ฟีดแบ็ก 1</p>
+        <p class="disp text-[14.5px] font-bold leading-snug">“คุ้มมั้ยที่จะใช้ / ความคุ้มค่า”</p>
+        <p class="text-[12px] text-ink2 leading-relaxed">
+          ใส่ตัวเลขให้เห็นทั้งสองฝั่ง (ตัวอย่าง 1 จุด 15 กก.): ผู้ทิ้งได้ <b>฿50</b> และขยะทั่วไปออกจากบ้านไปด้วย ·
+          ซาเล้งได้ <b>≈ ฿74</b> ต่อจุด หรือ <b>≈ ฿150</b> ต่อรอบ 3 จุด หลังหักน้ำมัน
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">ดู
+          <a class="scr-link" href="#s4">4</a><a class="scr-link" href="#s6">6</a><a class="scr-link" href="#s7">7</a><a class="scr-link" href="#numbers">ตาราง</a>
+        </p>
+      </article>
+
+      <article class="rounded-2xl border border-line bg-surface shadow-card p-3.5 flex flex-col gap-1.5">
+        <p class="eyebrow">ฟีดแบ็ก 2</p>
+        <p class="disp text-[14.5px] font-bold leading-snug">“แรงจูงใจของแอปคืออะไร”</p>
+        <p class="text-[12px] text-ink2 leading-relaxed">
+          ยอมรับว่าเงินจากขวดแค่หลักสิบบาท ไม่พอเป็นเหตุผล · จุดขายฝั่งผู้ทิ้งเปลี่ยนเป็น
+          <b>“มีคนมาเอาขยะทั่วไปไปด้วย ไม่ต้องขนไปร้านเอง”</b> และเลือกยกของให้แลกค่าขนได้ ·
+          ฝั่งซาเล้ง: <b>รู้ก่อนออกรถ</b>ว่ารอบนี้ได้เท่าไหร่ ไม่ต้องขับวนหา
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">ดู
+          <a class="scr-link" href="#s1">1</a><a class="scr-link" href="#s4">4</a><a class="scr-link" href="#s7">7</a>
+        </p>
+      </article>
+
+      <article class="rounded-2xl border border-line bg-surface shadow-card p-3.5 flex flex-col gap-1.5">
+        <p class="eyebrow">ฟีดแบ็ก 3</p>
+        <p class="disp text-[14.5px] font-bold leading-snug">“condition ดูเยอะ”</p>
+        <p class="text-[12px] text-ink2 leading-relaxed">
+          ฟอร์มเหลือ 2 คำถาม: <b>กี่ถุง</b> กับ <b>รับเงินหรือยกให้</b> · ตัดการเลือกวัสดุ ประเมินกิโล ปักหมุด หมายเหตุ ·
+          กฎ 15 กก. ให้ระบบคิดเอง ไม่โชว์ผู้ใช้ · ค่าขนจากช่วง ฿20–50 เหลือราคาเดียว <b>ถุงละ ฿15</b>
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">ดู
+          <a class="scr-link" href="#s1">1</a><a class="scr-link" href="#s4">4</a>
+        </p>
+      </article>
+
+      <article class="rounded-2xl border border-line bg-surface shadow-card p-3.5 flex flex-col gap-1.5">
+        <p class="eyebrow">ฟีดแบ็ก 4</p>
+        <p class="disp text-[14.5px] font-bold leading-snug">“คน low tech จะใช้ยังไง”</p>
+        <p class="text-[12px] text-ink2 leading-relaxed">
+          ซาเล้งมี<b>โหมดตัวใหญ่</b> ทีละงาน มีเสียงอ่าน · ใส่น้ำหนักด้วยปุ่ม + − ไม่ต้องพิมพ์ ·
+          เงินเหลือตัวเลขเดียว “ยื่นให้ ฿50” · ผู้ทิ้งไม่มีแอปก็ได้: <b>โทรเรียก / สแกน QR ที่จุดรวม / ให้นิติหรือร้านในซอยกดแทน</b> ·
+          SMS แจ้งตอนใกล้ถึง
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">ดู
+          <a class="scr-link" href="#s1">1</a><a class="scr-link" href="#s3">3</a><a class="scr-link" href="#s5">5</a><a class="scr-link" href="#s6">6</a>
+        </p>
+      </article>
+
+      <article class="rounded-2xl border border-line bg-surface shadow-card p-3.5 flex flex-col gap-1.5">
+        <p class="eyebrow">ฟีดแบ็ก 5</p>
+        <p class="disp text-[14.5px] font-bold leading-snug">“ขยะน้อยไม่คุ้ม แล้วจะลดขยะยังไง”</p>
+        <p class="text-[12px] text-ink2 leading-relaxed">
+          ขยะน้อยไม่ต้องเรียกรถ: ฝากไว้ที่<b>จุดรวมในซอย</b> หรือรอ<b>รอบประจำ</b> · เห็นว่าทั้งซอยรวมกันได้กี่กิโล ·
+          เป้าไม่ใช่เที่ยวละบ้าน แต่คือ<b>ไม่ให้ขวด/ลังปนไปกับขยะทั่วไป</b>
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">ดู
+          <a class="scr-link" href="#s2">2</a><a class="scr-link" href="#s7">7</a>
+        </p>
+      </article>
+
+      <article class="rounded-2xl border border-dashed p-3.5 flex flex-col gap-1.5" style="border-color:var(--warn);background:var(--warn-soft)">
+        <p class="eyebrow" style="color:var(--warn)">ฟีดแบ็ก 6</p>
+        <p class="disp text-[14.5px] font-bold leading-snug" style="color:var(--warn)">“ควรไปคุยกับซาเล้ง”</p>
+        <p class="text-[12px] leading-relaxed" style="color:var(--warn)">
+          เห็นด้วย — ตัวเลขทุกตัวในหน้านี้ (ราคา กฎ 15 กก. ค่าขน ฿15 จุดรวม) ยังเป็น<b>สมมติฐาน</b>
+          ทำรายการคำถามไว้สำหรับไปสัมภาษณ์แล้ว
+        </p>
+        <p class="mt-auto pt-1 flex flex-wrap items-center gap-1.5 text-[11px]" style="color:var(--warn)">ดู
+          <a class="scr-link" href="#research">คำถาม</a>
+        </p>
+      </article>
+
+    </div>
+  </section>
+
   <main class="board">
 
-    <!-- 1 · MAP -->
+    <!-- 1 · SIMPLE REQUEST -->
     <article id="s1" class="phone-anchor">
       <div class="phone-cap">
         <span class="phone-num">1</span>
-        <h2 class="disp text-[15px] font-bold">แผนที่จุดรับ</h2>
-        <span class="chip chip-col">ซาเล้ง</span>
+        <h2 class="disp text-[15px] font-bold">เรียกซาเล้ง · 2 คำถาม</h2>
+        <span class="chip chip-res">ผู้ทิ้ง</span>
       </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        หมุดบอกเลยว่าจุดนั้นมีขยะอะไร กี่กิโล · หมุดเหลือง = มีขยะทั่วไปด้วย ได้ค่าขนเพิ่ม
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        นับถุงอย่างเดียว ไม่ต้องชั่ง ไม่ต้องแยกประเภท ซาเล้งแยกให้ · ใช้ที่อยู่ที่บันทึกไว้
       </p>
+      <p class="chg">เดิม: ติ๊กวัสดุ 4 ช่อง + ปักหมุด + เลือกจุดรับ + หมายเหตุ</p>
 
       <div class="phone-frame">
         <div class="status-bar"><span class="mono">9:41</span><span>▮▮▮ · 84%</span></div>
         <div class="appbar">
-          <span class="text-[13px] font-semibold">รอบเก็บวันนี้ · ปทุมวัน</span>
-          <span class="wf-tag">Map</span>
+          <span class="text-[13px] font-semibold">เรียกซาเล้ง</span>
+          <span class="w-6 h-6 rounded-full grid place-items-center border border-dashed text-[10.5px]" style="border-color:var(--line-strong)">👤</span>
+        </div>
+        <div class="phone-body p-3.5 flex flex-col gap-3.5">
+          <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
+            <span class="text-[11.5px]">📍 ซ.จุฬาฯ 12 · หน้าบ้าน</span>
+            <span class="text-[10.5px] text-muted">เปลี่ยน</span>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <p class="disp text-[14px] font-bold">① มีกี่ถุง</p>
+            <div class="wf-box px-3 py-2.5 flex items-center justify-between gap-2">
+              <span class="min-w-0">
+                <span class="block text-[12.5px] font-medium">🛍️ ของขายได้</span>
+                <span class="block text-[10px] text-muted">ขวด ลัง กระป๋อง ใส่รวมกันได้</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="wf-btn px-0 py-1 w-8 text-[15px]">−</span>
+                <span class="mono text-[17px] w-5 text-center">3</span>
+                <span class="wf-btn px-0 py-1 w-8 text-[15px]">+</span>
+              </span>
+            </div>
+            <div class="rounded-[10px] px-3 py-2.5 flex items-center justify-between gap-2 border border-dashed" style="border-color:var(--warn);background:var(--warn-soft)">
+              <span class="min-w-0">
+                <span class="block text-[12.5px] font-medium" style="color:var(--warn)">🗑️ ขยะทั่วไป / เศษอาหาร</span>
+                <span class="block text-[10px]" style="color:var(--warn)">ถุงละ ฿15 · ราคาเดียว</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="wf-btn px-0 py-1 w-8 text-[15px]">−</span>
+                <span class="mono text-[17px] w-5 text-center" style="color:var(--warn)">2</span>
+                <span class="wf-btn px-0 py-1 w-8 text-[15px]">+</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <p class="disp text-[14px] font-bold">② ของขายได้ เอาเงินไหม</p>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="wf-btn wf-btn-primary py-3 flex flex-col gap-0.5">
+                <span class="text-[18px]">💵</span><span>รับเงิน</span>
+                <span class="text-[9.5px] font-normal opacity-80">ชั่งหน้าบ้าน จ่ายสด</span>
+              </div>
+              <div class="wf-btn py-3 flex flex-col gap-0.5">
+                <span class="text-[18px]">🤝</span><span>ยกให้</span>
+                <span class="text-[9.5px] font-normal opacity-80">แลกค่าขนขยะทั่วไป</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="wf-box px-3 py-2 text-center text-[11px] text-muted">📷 ถ่ายรูปกองขยะ (ไม่บังคับ)</div>
+
+          <div class="wf-btn wf-btn-primary py-3.5 text-[15px]">เรียกซาเล้ง</div>
+
+          <p class="rounded-lg px-3 py-2 text-[10.5px] text-muted leading-snug" style="background:var(--sunken)">
+            ไม่สะดวกใช้แอป? 📞 โทรเรียก · 🔳 สแกน QR ที่จุดรวม · ให้นิติ/ร้านในซอยกดแทน
+          </p>
+        </div>
+        <div class="tabbar">
+          <span><i>🏠</i>หน้าแรก</span><span class="on"><i>➕</i>เรียกรถ</span><span><i>📋</i>คำขอ</span><span><i>👤</i>ฉัน</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 · SMALL AMOUNT → POOL -->
+    <article id="s2" class="phone-anchor">
+      <div class="phone-cap">
+        <span class="phone-num">2</span>
+        <h2 class="disp text-[15px] font-bold">ขยะน้อย? ฝากรวมกับเพื่อนบ้าน</h2>
+        <span class="chip chip-res">ผู้ทิ้ง</span>
+      </div>
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        มีแค่ 1 ถุง ซาเล้งมาเที่ยวเดียวไม่คุ้ม · แอปไม่ปฏิเสธ แต่พาไปรวมกับบ้านอื่นจนคุ้ม
+      </p>
+      <p class="chg">ใหม่ · ตอบ “ขยะน้อยไม่คุ้ม / ลดขยะยังไง”</p>
+
+      <div class="phone-frame">
+        <div class="status-bar"><span class="mono">9:41</span><span>▮▮▮ · 84%</span></div>
+        <div class="appbar">
+          <span class="text-[13px] font-semibold">← เรียกซาเล้ง</span>
+          <span class="wf-tag">Pool</span>
+        </div>
+        <div class="phone-body p-3.5 flex flex-col gap-3">
+          <div class="rounded-xl px-3.5 py-3" style="background:var(--sunken)">
+            <p class="text-[12.5px] font-semibold">🛍️ 1 ถุง · ประมาณ 2 กก.</p>
+            <p class="text-[11px] text-muted leading-snug mt-0.5">น้อยไปสำหรับเที่ยวเดียว ไม่เป็นไร เลือกทางนี้แทน 👇</p>
+          </div>
+
+          <div class="rounded-xl px-3 py-3 border flex flex-col gap-2" style="border-color:var(--accent);background:var(--accent-soft)">
+            <div class="flex items-start gap-2">
+              <i class="wf-chk wf-chk-on mt-0.5"></i>
+              <div class="min-w-0">
+                <p class="text-[12.5px] font-semibold" style="color:var(--accent-ink)">🧺 เอาไปวางจุดรวม</p>
+                <p class="text-[10.5px] leading-snug" style="color:var(--accent-ink);opacity:.85">หน้าร้านป้าแดง ปากซอย · เดิน 80 ม.</p>
+              </div>
+            </div>
+            <div class="wf-meter"><i style="width:73%"></i><i style="width:13%;opacity:.45"></i></div>
+            <p class="text-[10.5px] leading-snug" style="color:var(--accent-ink)">
+              ตอนนี้ <span class="mono">11 / 15</span> กก. · รวมของคุณแล้วขาดอีก <span class="mono">2</span> กก. ซาเล้งก็มา
+            </p>
+          </div>
+
+          <div class="wf-box px-3 py-3 flex items-start gap-2">
+            <i class="wf-chk mt-0.5"></i>
+            <div class="min-w-0">
+              <p class="text-[12.5px] font-semibold">📅 รอรอบประจำ</p>
+              <p class="text-[10.5px] text-muted leading-snug">ซาเล้งผ่านซอยนี้ทุก อังคาร · ศุกร์ เช้า · วางหน้าบ้านไว้ได้เลย</p>
+            </div>
+          </div>
+
+          <div class="wf-box px-3 py-2.5 flex items-center justify-between gap-2">
+            <span class="min-w-0">
+              <span class="block text-[11px] text-muted leading-snug">ซ.จุฬาฯ 12 เดือนนี้ ไม่ไปหลุมฝังกลบ</span>
+              <span class="block text-[10px] text-muted">ทีละถุงจาก 41 บ้าน</span>
+            </span>
+            <span class="mono text-[16px] font-medium" style="color:var(--accent-ink)">312 กก.</span>
+          </div>
+
+          <div class="wf-btn wf-btn-primary py-3.5 text-[14px]">🧭 นำทางไปจุดรวม</div>
+        </div>
+        <div class="tabbar">
+          <span><i>🏠</i>หน้าแรก</span><span class="on"><i>➕</i>เรียกรถ</span><span><i>📋</i>คำขอ</span><span><i>👤</i>ฉัน</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 · WAITING -->
+    <article id="s3" class="phone-anchor">
+      <div class="phone-cap">
+        <span class="phone-num">3</span>
+        <h2 class="disp text-[15px] font-bold">รอซาเล้งมา</h2>
+        <span class="chip chip-res">ผู้ทิ้ง</span>
+      </div>
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        สถานะเหลือ 3 ขั้น · ปุ่มโทรใหญ่แทนแชท · SMS เตือนตอนใกล้ถึง ไม่ต้องเฝ้าจอ
+      </p>
+      <p class="chg">เดิม: ไทม์ไลน์ 4 ขั้น + ช่วงราคาประเมิน + ปุ่มแชท</p>
+
+      <div class="phone-frame">
+        <div class="status-bar"><span class="mono">9:43</span><span>▮▮▮ · 84%</span></div>
+        <div class="appbar">
+          <span class="text-[13px] font-semibold">คำขอ #A-114</span>
+          <span class="wf-tag">Status</span>
+        </div>
+        <div class="phone-body p-3.5 flex flex-col gap-3.5">
+
+          <div class="rounded-xl px-3.5 py-3" style="background:var(--accent-soft)">
+            <p class="disp text-[16px] font-bold" style="color:var(--accent-ink)">🛺 พี่สมชายกำลังมา</p>
+            <p class="text-[11.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">ถึงประมาณ 09:50 · อีก ~7 นาที</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5">
+            <div class="flex flex-col gap-1">
+              <i class="block h-1.5 rounded-full" style="background:var(--accent)"></i>
+              <span class="text-[10.5px] font-medium">✓ ส่งแล้ว</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <i class="pulse-dot block h-1.5 rounded-full" style="background:var(--accent)"></i>
+              <span class="text-[10.5px] font-medium" style="color:var(--accent-ink)">กำลังมา</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <i class="block h-1.5 rounded-full" style="background:var(--line)"></i>
+              <span class="text-[10.5px] text-muted">ชั่ง &amp; จ่าย</span>
+            </div>
+          </div>
+
+          <div class="wf-box px-3 py-2.5 flex flex-col gap-1.5">
+            <p class="wf-tag">ที่แจ้งไว้</p>
+            <div class="flex items-center justify-between"><span class="text-[12px]">🛍️ ของขายได้ 3 ถุง</span><span class="text-[11px] text-muted">💵 รับเงิน</span></div>
+            <div class="flex items-center justify-between"><span class="text-[12px]" style="color:var(--warn)">🗑️ ขยะทั่วไป 2 ถุง</span><span class="mono text-[11px]" style="color:var(--warn)">฿30</span></div>
+          </div>
+
+          <p class="rounded-lg px-3 py-2 text-[10.5px] text-muted leading-snug" style="background:var(--sunken)">
+            📩 จะส่ง SMS ตอนพี่สมชายใกล้ถึง · ยกถุงมาวางหน้าบ้านได้เลย
+          </p>
+
+          <div class="wf-btn wf-btn-primary py-3.5 text-[15px]">📞 โทรหาพี่สมชาย</div>
+          <div class="wf-btn">ยกเลิก</div>
+        </div>
+        <div class="tabbar">
+          <span><i>🏠</i>หน้าแรก</span><span><i>➕</i>เรียกรถ</span><span class="on"><i>📋</i>คำขอ</span><span><i>👤</i>ฉัน</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4 · ROUTE MAP -->
+    <article id="s4" class="phone-anchor">
+      <div class="phone-cap">
+        <span class="phone-num">4</span>
+        <h2 class="disp text-[15px] font-bold">รอบนี้คุ้มไหม</h2>
+        <span class="chip chip-col">ซาเล้ง</span>
+      </div>
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        แอปจัดรอบให้ บอกกำไรรวมหลังหักน้ำมัน · จุดที่ยังไม่ครบเป็นสีเทา ซาเล้งไม่ต้องจำกฎ 15 กก.
+      </p>
+      <p class="chg">เดิม: เห็นหมุดทุกจุด ต้องคิดเองว่าจุดไหนคุ้ม</p>
+
+      <div class="phone-frame">
+        <div class="status-bar"><span class="mono">13:05</span><span>▮▮▮ · 84%</span></div>
+        <div class="appbar">
+          <span class="text-[13px] font-semibold">รอบบ่ายนี้ · ปทุมวัน</span>
+          <span class="wf-tag">Route</span>
         </div>
         <div class="phone-body">
+          <div class="px-3.5 py-3 flex items-end justify-between gap-2" style="background:var(--accent-soft)">
+            <div>
+              <p class="text-[11px]" style="color:var(--accent-ink);opacity:.85">แนะนำ 3 จุด · 44 กก. · 2.1 กม.</p>
+              <p class="mono text-[26px] font-medium leading-tight" style="color:var(--accent-ink)">≈ ฿150</p>
+            </div>
+            <p class="text-[10px] text-right leading-tight" style="color:var(--accent-ink);opacity:.85">หักน้ำมัน<br>แล้ว</p>
+          </div>
+
           <div class="map" style="overflow:hidden">
-            <svg viewBox="0 0 400 300" role="img" aria-label="แผนที่จำลองแสดงจุดทิ้งและชนิดขยะในแต่ละจุด">
+            <svg viewBox="0 0 400 300" role="img" aria-label="แผนที่จำลองแสดงเส้นทางรอบเก็บ 3 จุด">
               <rect width="400" height="300" fill="var(--sunken)"/>
               <rect x="252" y="186" width="132" height="96" rx="16" fill="var(--accent-soft)"/>
               <path d="M-10 258 C 70 246 130 292 230 298" stroke="#8FBEDC" stroke-width="13" fill="none" opacity=".5"/>
@@ -100,430 +398,239 @@
                 <rect x="272" y="110" width="28" height="26" rx="3"/><rect x="308" y="112" width="20" height="22" rx="3"/>
                 <rect x="16" y="228" width="36" height="26" rx="3"/><rect x="112" y="228" width="30" height="22" rx="3"/>
               </g>
+              <path d="M180 159 L116 108 L256 75 L264 210" stroke="var(--accent)" stroke-width="3.5"
+                stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
               <g fill="var(--muted)" font-size="8" opacity=".8">
                 <text x="8" y="88">ถ.พระราม 4</text>
                 <text x="290" y="242">สวนสาธารณะ</text>
               </g>
             </svg>
             <div class="pin pin-ready" style="left:29%; top:36%">
-              <div class="pin-card"><span>🥤</span><span>📦</span><span class="mono pin-kg">12.0</span></div>
+              <div class="pin-card"><b>①</b><span class="mono pin-kg">15.0</span></div>
               <i class="pin-stem"></i><i class="pin-dot"></i>
             </div>
             <div class="pin pin-ready" style="left:64%; top:25%">
-              <div class="pin-card"><span>🥤</span><span>🥫</span><span>📦</span><span class="mono pin-kg">16.4</span></div>
+              <div class="pin-card"><b>②</b><span class="mono pin-kg">16.4</span></div>
               <i class="pin-stem"></i><i class="pin-dot"></i>
             </div>
             <div class="pin pin-svc" style="left:66%; top:70%">
-              <div class="pin-card"><span>📦</span><span>🗑️</span><span class="pin-kg">+฿30</span></div>
+              <div class="pin-card"><b>③</b><span>🗑️</span><span class="pin-kg">+฿45</span></div>
               <i class="pin-stem"></i><i class="pin-dot"></i>
             </div>
-            <div class="pin" style="left:19%; top:76%">
-              <div class="pin-card"><span>🥤</span><span class="mono pin-kg">6.1</span></div>
+            <div class="pin" style="left:19%; top:76%; opacity:.6">
+              <div class="pin-card"><span class="mono pin-kg">13/15</span></div>
               <i class="pin-stem"></i><i class="pin-dot"></i>
             </div>
             <div class="me" style="left:45%; top:53%" title="ตำแหน่งซาเล้ง"></div>
           </div>
 
-          <div class="px-3.5 py-2.5 border-b border-dashed flex flex-wrap gap-x-2.5 gap-y-1" style="border-color:var(--line-strong)">
-            <span class="text-[10.5px] text-muted">🥤 ขวด</span>
-            <span class="text-[10.5px] text-muted">🥫 กระป๋อง</span>
-            <span class="text-[10.5px] text-muted">📦 ลัง</span>
-            <span class="text-[10.5px] text-muted">🍾 แก้ว</span>
-            <span class="text-[10.5px]" style="color:var(--warn)">🗑️ ทั่วไป · มีค่าบริการ</span>
-          </div>
-
-          <div class="px-3.5 pt-3 pb-4">
-            <p class="wf-tag mb-2">Request list · 3 คำขอ</p>
-            <div class="flex flex-col gap-2">
-              <div class="wf-box px-3 py-2.5 flex items-center gap-2.5">
-                <span class="flex-1 min-w-0">
-                  <span class="block text-[12px] font-medium truncate">ซ.จุฬาฯ 12 · คุณปุ๊ก</span>
-                  <span class="block text-[10px] text-muted">🥤 📦 · 12.0 kg · 140 ม.</span>
-                </span>
-                <span class="wf-btn wf-btn-primary text-[11px] px-2.5 py-1.5">รับงาน</span>
-              </div>
-              <div class="wf-box px-3 py-2.5 flex items-center gap-2.5">
-                <span class="flex-1 min-w-0">
-                  <span class="block text-[12px] font-medium truncate">ตลาดสามย่าน ล็อค B</span>
-                  <span class="block text-[10px]" style="color:var(--warn)">📦 🗑️ · ค่าขน +฿30</span>
-                </span>
-                <span class="wf-btn wf-btn-primary text-[11px] px-2.5 py-1.5">รับงาน</span>
-              </div>
-              <div class="wf-box px-3 py-3 flex flex-col gap-2">
-                <div class="wf-skel" style="width:62%"></div>
-                <div class="wf-skel" style="width:38%"></div>
-              </div>
+          <div class="px-3.5 pt-3 pb-4 flex flex-col gap-2">
+            <div class="wf-box px-3 py-2.5 flex items-center gap-2.5">
+              <span class="disp text-[15px] font-bold" style="color:var(--accent-ink)">①</span>
+              <span class="flex-1 min-w-0">
+                <span class="block text-[12px] font-medium truncate">ซ.จุฬาฯ 12 · หน้าบ้าน</span>
+                <span class="block text-[10px] text-muted">🛍️ 3 ถุง · 🗑️ 2 ถุง</span>
+              </span>
+              <span class="mono text-[12.5px]" style="color:var(--accent-ink)">≈ ฿74</span>
             </div>
+            <div class="wf-box px-3 py-2.5 flex items-center gap-2.5">
+              <span class="disp text-[15px] font-bold" style="color:var(--accent-ink)">②</span>
+              <span class="flex-1 min-w-0">
+                <span class="block text-[12px] font-medium truncate">จุดรวม คอนโดสามย่าน</span>
+                <span class="block text-[10px] text-muted">16.4 กก. · ครบแล้ว</span>
+              </span>
+              <span class="mono text-[12.5px]" style="color:var(--accent-ink)">≈ ฿45</span>
+            </div>
+            <div class="wf-box px-3 py-2.5 flex items-center gap-2.5">
+              <span class="disp text-[15px] font-bold" style="color:var(--warn)">③</span>
+              <span class="flex-1 min-w-0">
+                <span class="block text-[12px] font-medium truncate">ตลาดสามย่าน ล็อค B</span>
+                <span class="block text-[10px]" style="color:var(--warn)">📦 ลัง · 🗑️ 3 ถุง</span>
+              </span>
+              <span class="mono text-[12.5px]" style="color:var(--warn)">≈ ฿60</span>
+            </div>
+            <p class="text-[10px] text-muted leading-snug">หมุดเทา = ยังไม่ครบ รอเพื่อนบ้านฝากเพิ่ม ไม่ต้องแวะ</p>
+            <div class="wf-btn wf-btn-primary py-3 text-[14px]">เริ่มรอบนี้</div>
           </div>
         </div>
         <div class="tabbar">
-          <span class="on"><i>🗺️</i>แผนที่</span><span><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
+          <span class="on"><i>🗺️</i>รอบ</span><span><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
         </div>
       </div>
     </article>
 
-    <!-- 2 · REQUEST FORM -->
-    <article id="s2" class="phone-anchor">
-      <div class="phone-cap">
-        <span class="phone-num">2</span>
-        <h2 class="disp text-[15px] font-bold">ฟอร์มเรียกซาเล้ง</h2>
-        <span class="chip chip-res">ผู้ทิ้ง</span>
-      </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        เลือกว่ามีขยะอะไร ปักหมุดจุดรับ · ถ้ามีขยะทั่วไปด้วยจะบวกค่าบริการ
-      </p>
-
-      <div class="phone-frame">
-        <div class="status-bar"><span class="mono">9:41</span><span>▮▮▮ · 84%</span></div>
-        <div class="appbar">
-          <span class="text-[13px] font-semibold">Request Form</span>
-          <span class="flex items-center gap-1.5 text-[10.5px] text-muted">
-            <span class="w-6 h-6 rounded-full grid place-items-center border border-dashed" style="border-color:var(--line-strong)">👤</span>
-          </span>
-        </div>
-        <div class="phone-body p-3.5 flex flex-col gap-3.5">
-          <div>
-            <p class="wf-tag mb-2">ขยะรีไซเคิล · ซาเล้งรับซื้อ</p>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk wf-chk-on"></i><span class="text-[11.5px]">🥤 ขวด PET</span></div>
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk wf-chk-on"></i><span class="text-[11.5px]">📦 ลัง</span></div>
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk"></i><span class="text-[11.5px]">🥫 กระป๋อง</span></div>
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk"></i><span class="text-[11.5px]">🍾 ขวดแก้ว</span></div>
-            </div>
-          </div>
-
-          <div class="rounded-xl px-3 py-2.5 border border-dashed" style="border-color:var(--warn);background:var(--warn-soft)">
-            <div class="flex items-start gap-2">
-              <i class="wf-chk mt-0.5"></i>
-              <div>
-                <p class="text-[12px] font-semibold" style="color:var(--warn)">🗑️ มีขยะทั่วไป / เศษอาหาร</p>
-                <p class="text-[10.5px] leading-snug mt-0.5" style="color:var(--warn)">
-                  จ่ายเพิ่มให้ซาเล้งขนไปทิ้งจุดที่ กทม. จัดไว้ · ฿20–50
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="wf-tag mb-2">ปักหมุดจุดรับ</p>
-            <div class="map wf-box" style="overflow:hidden">
-              <svg viewBox="0 0 400 150" role="img" aria-label="แผนที่จำลองสำหรับปักหมุดจุดรับ">
-                <rect width="400" height="150" fill="var(--sunken)"/>
-                <rect x="278" y="10" width="104" height="58" rx="12" fill="var(--accent-soft)"/>
-                <g stroke="var(--canvas)" stroke-linecap="round" fill="none">
-                  <path d="M-10 58 H410" stroke-width="20"/>
-                  <path d="M-10 122 H410" stroke-width="14"/>
-                  <path d="M120 -10 V160" stroke-width="18"/>
-                  <path d="M258 -10 V160" stroke-width="12"/>
-                </g>
-                <g fill="var(--line)" opacity=".6">
-                  <rect x="24" y="16" width="34" height="24" rx="3"/><rect x="70" y="20" width="24" height="20" rx="3"/>
-                  <rect x="148" y="16" width="40" height="26" rx="3"/><rect x="150" y="80" width="32" height="24" rx="3"/>
-                  <rect x="26" y="80" width="28" height="26" rx="3"/><rect x="286" y="86" width="36" height="22" rx="3"/>
-                </g>
-              </svg>
-              <div class="pin pin-ready" style="left:42%; top:72%">
-                <div class="pin-card"><span>📍</span><span class="pin-kg">หน้าบ้าน · ซ.จุฬาฯ 12</span></div>
-                <i class="pin-stem"></i><i class="pin-dot"></i>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="wf-tag mb-2">รับที่</p>
-            <div class="flex flex-col gap-1.5">
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk wf-chk-on"></i><span class="text-[11.5px]">หน้าบ้าน · ที่อยู่ที่บันทึกไว้</span></div>
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk"></i><span class="text-[11.5px]">ปากซอย / จุดรวมใกล้บ้าน</span></div>
-              <div class="wf-box px-2.5 py-2 flex items-center gap-2"><i class="wf-chk"></i><span class="text-[11.5px]">เลือกหมุดเองในแผนที่ 📍</span></div>
-            </div>
-          </div>
-
-          <div>
-            <p class="wf-tag mb-2">หมายเหตุถึงซาเล้ง</p>
-            <div class="wf-box px-3 py-2.5 flex flex-col gap-2" style="min-height:56px">
-              <div class="wf-skel" style="width:78%"></div>
-              <div class="wf-skel" style="width:44%"></div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="wf-btn wf-btn-primary">ส่งคำขอ</div>
-            <div class="wf-btn">ยกเลิก</div>
-          </div>
-        </div>
-        <div class="tabbar">
-          <span><i>🏠</i>หน้าแรก</span><span class="on"><i>➕</i>เรียกรถ</span><span><i>📋</i>คำขอ</span><span><i>👤</i>ฉัน</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- 3 · WAITING -->
-    <article id="s3" class="phone-anchor">
-      <div class="phone-cap">
-        <span class="phone-num">3</span>
-        <h2 class="disp text-[15px] font-bold">รอซาเล้งรับงาน</h2>
-        <span class="chip chip-res">ผู้ทิ้ง</span>
-      </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        ส่งคำขอแล้ว เห็นสถานะว่าใครรับ กำลังมาถึงกี่โมง ไม่ต้องเฝ้าหน้าบ้าน
-      </p>
-
-      <div class="phone-frame">
-        <div class="status-bar"><span class="mono">9:43</span><span>▮▮▮ · 84%</span></div>
-        <div class="appbar">
-          <span class="text-[13px] font-semibold">คำขอ #A-114</span>
-          <span class="wf-tag">Status</span>
-        </div>
-        <div class="phone-body p-3.5 flex flex-col gap-3.5">
-
-          <div class="rounded-xl px-3.5 py-3" style="background:var(--accent-soft)">
-            <p class="disp text-[14px] font-bold" style="color:var(--accent-ink)">🛺 พี่สมชายรับงานแล้ว</p>
-            <p class="text-[11px] mt-0.5" style="color:var(--accent-ink);opacity:.85">ถึงหน้าบ้านใน ~7 นาที · ยกถุงมาวางไว้ได้เลย</p>
-          </div>
-
-          <div class="flex flex-col gap-0">
-            <div class="flex gap-2.5">
-              <div class="flex flex-col items-center">
-                <i class="w-2.5 h-2.5 rounded-full block" style="background:var(--accent)"></i>
-                <i class="w-px flex-1 block" style="background:var(--line-strong)"></i>
-              </div>
-              <div class="pb-3">
-                <p class="text-[12px] font-medium leading-tight">ส่งคำขอแล้ว</p>
-                <p class="text-[10px] text-muted">09:41</p>
-              </div>
-            </div>
-            <div class="flex gap-2.5">
-              <div class="flex flex-col items-center">
-                <i class="w-2.5 h-2.5 rounded-full block" style="background:var(--accent)"></i>
-                <i class="w-px flex-1 block" style="background:var(--line-strong)"></i>
-              </div>
-              <div class="pb-3">
-                <p class="text-[12px] font-medium leading-tight">ซาเล้งกดรับงาน</p>
-                <p class="text-[10px] text-muted">09:43 · พี่สมชาย ⭐ 4.8</p>
-              </div>
-            </div>
-            <div class="flex gap-2.5">
-              <div class="flex flex-col items-center">
-                <i class="pulse-dot w-2.5 h-2.5 rounded-full block" style="background:var(--accent)"></i>
-                <i class="w-px flex-1 block" style="background:var(--line)"></i>
-              </div>
-              <div class="pb-3">
-                <p class="text-[12px] font-medium leading-tight">กำลังเดินทางมา</p>
-                <p class="text-[10px] text-muted">ถึงประมาณ 09:50</p>
-              </div>
-            </div>
-            <div class="flex gap-2.5">
-              <div class="flex flex-col items-center">
-                <i class="w-2.5 h-2.5 rounded-full block" style="background:var(--line-strong)"></i>
-              </div>
-              <div>
-                <p class="text-[12px] text-muted leading-tight">เก็บของ &amp; จ่ายเงิน</p>
-                <p class="text-[10px] text-muted">รอชั่งจริงหน้างาน</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="wf-box px-3 py-2.5 flex flex-col gap-1.5">
-            <p class="wf-tag">สิ่งที่แจ้งไว้</p>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]">🥤 ขวด PET</span><span class="mono text-[11px] text-muted">~5 กก.</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]">📦 ลัง/กระดาษ</span><span class="mono text-[11px] text-muted">~7 กก.</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]" style="color:var(--warn)">🗑️ ขยะทั่วไป 2 ถุง</span><span class="mono text-[11px]" style="color:var(--warn)">+฿30</span></div>
-          </div>
-
-          <div class="wf-box px-3 py-2.5 flex items-center justify-between gap-2">
-            <span class="text-[11px] text-muted">ประเมินได้รับ</span>
-            <span class="mono text-[14px] font-medium" style="color:var(--accent-ink)">฿70–85</span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="wf-btn">💬 แชท</div>
-            <div class="wf-btn">ยกเลิกคำขอ</div>
-          </div>
-        </div>
-        <div class="tabbar">
-          <span><i>🏠</i>หน้าแรก</span><span><i>➕</i>เรียกรถ</span><span class="on"><i>📋</i>คำขอ</span><span><i>👤</i>ฉัน</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- 4 · JOB DETAIL -->
-    <article id="s4" class="phone-anchor">
-      <div class="phone-cap">
-        <span class="phone-num">4</span>
-        <h2 class="disp text-[15px] font-bold">รายละเอียดคำขอ</h2>
-        <span class="chip chip-col">ซาเล้ง</span>
-      </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        กดจากหมุดในแผนที่ · เห็นของ ราคากลาง ค่าบริการ แล้วค่อยตัดสินใจรับงาน
-      </p>
-
-      <div class="phone-frame">
-        <div class="status-bar"><span class="mono">9:42</span><span>▮▮▮ · 84%</span></div>
-        <div class="appbar">
-          <span class="text-[13px] font-semibold">← คำขอ #A-114</span>
-          <span class="wf-tag">Detail</span>
-        </div>
-        <div class="phone-body p-3.5 flex flex-col gap-3.5">
-          <div class="flex items-start justify-between gap-2.5">
-            <div class="min-w-0">
-              <p class="wf-tag">ที่อยู่</p>
-              <p class="disp text-[14px] font-bold leading-snug mt-0.5">ซ.จุฬาฯ 12 · หอพักสวนหลวง</p>
-              <p class="text-[11px] text-muted leading-snug">หน้าบ้าน ประตูเหล็กเขียว · 0.9 กม. · ~7 นาที</p>
-            </div>
-            <div class="w-14 h-14 shrink-0 wf-box grid place-items-center text-[20px]">🏠</div>
-          </div>
-
-          <div>
-            <p class="wf-tag mb-2">ของที่จะให้เก็บ</p>
-            <div class="flex flex-col gap-1.5">
-              <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
-                <span class="text-[11.5px]">🥤 ขวด PET</span>
-                <span class="mono text-[10.5px] text-muted">~5 กก. · ฿9.50</span>
-              </div>
-              <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
-                <span class="text-[11.5px]">📦 ลัง/กระดาษ</span>
-                <span class="mono text-[10.5px] text-muted">~7 กก. · ฿3.20</span>
-              </div>
-              <div class="rounded-[10px] px-3 py-2 flex items-center justify-between gap-2 border border-dashed" style="border-color:var(--warn);background:var(--warn-soft)">
-                <span class="text-[11.5px]" style="color:var(--warn)">🗑️ ขยะทั่วไป 2 ถุง</span>
-                <span class="mono text-[10.5px] font-semibold" style="color:var(--warn)">ค่าบริการ +฿30</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="wf-box px-3 py-2.5">
-            <p class="wf-tag">หมายเหตุจากผู้ทิ้ง</p>
-            <p class="text-[11.5px] text-ink2 leading-snug mt-1">มัดลังไว้แล้ว วางหน้าประตู · โทรก่อนถึง 5 นาที</p>
-          </div>
-
-          <div class="wf-box px-3 py-2.5 flex items-end justify-between gap-2">
-            <div>
-              <p class="text-[10px] text-muted leading-tight">ประเมินรายได้เที่ยวนี้</p>
-              <p class="mono text-[17px] font-medium leading-tight" style="color:var(--accent-ink)">฿100–130</p>
-            </div>
-            <p class="text-[10px] text-muted text-right leading-tight">หักน้ำมัน<br>~฿15</p>
-          </div>
-
-          <div class="grid grid-cols-[auto_1fr] gap-2">
-            <div class="wf-btn">📞</div>
-            <div class="wf-btn wf-btn-primary">รับงาน · Accept</div>
-          </div>
-        </div>
-        <div class="tabbar">
-          <span class="on"><i>🗺️</i>แผนที่</span><span><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- 5 · FINISH FORM -->
+    <!-- 5 · BIG MODE JOB -->
     <article id="s5" class="phone-anchor">
       <div class="phone-cap">
         <span class="phone-num">5</span>
-        <h2 class="disp text-[15px] font-bold">ชั่งจริงหน้างาน</h2>
+        <h2 class="disp text-[15px] font-bold">โหมดตัวใหญ่ · ทีละงาน</h2>
         <span class="chip chip-col">ซาเล้ง</span>
       </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        กรอกน้ำหนักจริงเทียบกับที่ประเมินไว้ · ระบบคิดเงินให้ทั้งค่าของและค่าบริการ
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        สำหรับคนไม่ถนัดมือถือ: ตัวใหญ่ มีเสียงอ่าน ไม่มีช่องให้พิมพ์ · กดได้แค่ รับ / ข้าม / โทร / นำทาง
       </p>
+      <p class="chg">เดิม: หน้ารายละเอียด ราคาต่อกิโลหลายบรรทัด</p>
 
       <div class="phone-frame">
-        <div class="status-bar"><span class="mono">9:56</span><span>▮▮▮ · 82%</span></div>
+        <div class="status-bar"><span class="mono">13:06</span><span>▮▮▮ · 84%</span></div>
         <div class="appbar">
-          <span class="text-[13px] font-semibold">สรุปงาน #A-114</span>
-          <span class="wf-tag">Finish</span>
+          <span class="text-[13px] font-semibold">จุดที่ 1 จาก 3</span>
+          <span class="wf-btn px-2 py-1 text-[11px]">🔊 ฟัง</span>
         </div>
-        <div class="phone-body p-3.5 flex flex-col gap-3.5">
-          <div class="flex items-center gap-2">
-            <i class="wf-chk wf-chk-on"></i>
-            <span class="text-[12px] font-medium">ถึงจุดรับแล้ว · เก็บของครบ</span>
+        <div class="phone-body p-3.5 flex flex-col gap-3">
+          <div>
+            <p class="disp text-[24px] font-bold leading-tight">ซ.จุฬาฯ 12</p>
+            <p class="text-[13px] text-ink2 leading-snug mt-0.5">ประตูเหล็กเขียว · 900 ม.</p>
           </div>
 
-          <div class="grid grid-cols-[1fr_auto_auto] gap-x-2.5 gap-y-2 items-center">
-            <span class="wf-tag">วัสดุ</span>
-            <span class="wf-tag text-right">ประเมิน</span>
-            <span class="wf-tag text-right">ชั่งจริง</span>
-
-            <span class="text-[11.5px]">🥤 ขวด PET</span>
-            <span class="mono text-[11px] text-muted text-right">5.0</span>
-            <span class="wf-box px-2 py-1 mono text-[11.5px] text-right w-[62px]">4.8</span>
-
-            <span class="text-[11.5px]">📦 ลัง/กระดาษ</span>
-            <span class="mono text-[11px] text-muted text-right">7.0</span>
-            <span class="wf-box px-2 py-1 mono text-[11.5px] text-right w-[62px]">7.4</span>
-
-            <span class="text-[11.5px]">🥫 กระป๋อง</span>
-            <span class="mono text-[11px] text-muted text-right">—</span>
-            <span class="wf-box px-2 py-1 mono text-[11.5px] text-right w-[62px]">0.6</span>
-          </div>
-
-          <div class="rounded-xl px-3 py-2.5 border border-dashed flex items-center justify-between gap-2" style="border-color:var(--warn);background:var(--warn-soft)">
-            <span class="text-[11.5px]" style="color:var(--warn)">🗑️ ค่าขนขยะทั่วไป</span>
-            <span class="wf-box px-2 py-1 mono text-[11.5px] text-right w-[62px]" style="color:var(--warn)">฿30</span>
-          </div>
-
-          <div class="wf-box px-3 py-2.5 flex flex-col gap-1.5">
-            <div class="flex items-center justify-between"><span class="text-[11.5px] text-muted">จ่ายผู้ทิ้ง (ค่าของเก่า)</span><span class="mono text-[12px]">− ฿78</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px] text-muted">รับค่าบริการขนขยะ</span><span class="mono text-[12px]">+ ฿30</span></div>
-            <div class="flex items-center justify-between border-t border-dashed pt-1.5 mt-0.5" style="border-color:var(--line-strong)">
-              <span class="text-[11.5px] font-semibold">ขายต่อร้านของเก่าได้</span>
-              <span class="mono text-[14px] font-medium" style="color:var(--accent-ink)">฿126</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="wf-box py-3 flex flex-col items-center gap-0.5">
+              <span class="text-[28px] leading-none">🛍️</span>
+              <span class="disp text-[17px] font-bold">3 ถุง</span>
+              <span class="text-[11px] text-muted">ขายได้</span>
+            </div>
+            <div class="rounded-[10px] py-3 flex flex-col items-center gap-0.5 border border-dashed" style="border-color:var(--warn);background:var(--warn-soft)">
+              <span class="text-[28px] leading-none">🗑️</span>
+              <span class="disp text-[17px] font-bold" style="color:var(--warn)">2 ถุง</span>
+              <span class="text-[11px]" style="color:var(--warn)">ขนไปทิ้ง</span>
             </div>
           </div>
 
-          <div class="wf-btn wf-btn-primary">จบงาน · Finish</div>
+          <div class="rounded-xl px-3.5 py-2.5 text-center" style="background:var(--accent-soft)">
+            <p class="text-[12px]" style="color:var(--accent-ink);opacity:.85">ได้ประมาณ</p>
+            <p class="mono text-[32px] font-medium leading-tight" style="color:var(--accent-ink)">฿74</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="wf-btn py-5 text-[18px]">❌ ข้าม</div>
+            <div class="wf-btn wf-btn-primary py-5 text-[18px]">✅ รับ</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="wf-btn py-3 text-[15px]">📞 โทร</div>
+            <div class="wf-btn py-3 text-[15px]">🧭 นำทาง</div>
+          </div>
         </div>
         <div class="tabbar">
-          <span><i>🗺️</i>แผนที่</span><span class="on"><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
+          <span><i>🗺️</i>รอบ</span><span class="on"><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
         </div>
       </div>
     </article>
 
-    <!-- 6 · RECEIPT -->
+    <!-- 6 · WEIGH & PAY -->
     <article id="s6" class="phone-anchor">
       <div class="phone-cap">
         <span class="phone-num">6</span>
-        <h2 class="disp text-[15px] font-bold">จบงาน · สรุป &amp; ให้ดาว</h2>
-        <span class="chip chip-res">ผู้ทิ้ง</span>
+        <h2 class="disp text-[15px] font-bold">ชั่ง &amp; จ่าย</h2>
+        <span class="chip chip-col">ซาเล้ง</span>
       </div>
-      <p class="text-[11.5px] text-muted leading-snug mb-2.5">
-        เห็นว่าได้เงินเท่าไหร่ จ่ายค่าบริการเท่าไหร่ ขยะไม่ไปหลุมฝังกลบกี่กิโล
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        ใส่น้ำหนักด้วยปุ่ม + − · ระบบหักค่าขนให้ เหลือตัวเลขเดียวว่าต้องยื่นเงินเท่าไหร่
       </p>
+      <p class="chg">เดิม: ตารางประเมิน vs ชั่งจริง + ยอด 3 บรรทัด</p>
 
       <div class="phone-frame">
-        <div class="status-bar"><span class="mono">10:02</span><span>▮▮▮ · 82%</span></div>
+        <div class="status-bar"><span class="mono">13:14</span><span>▮▮▮ · 82%</span></div>
+        <div class="appbar">
+          <span class="text-[13px] font-semibold">ชั่ง · จุดที่ 1</span>
+          <span class="wf-tag">Weigh</span>
+        </div>
+        <div class="phone-body p-3.5 flex flex-col gap-3">
+          <div class="flex flex-col gap-2">
+            <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
+              <span class="text-[13px]">🥤 ขวด PET</span>
+              <span class="flex items-center gap-1.5">
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">−</span>
+                <span class="mono text-[17px] w-10 text-center">5.0</span>
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">+</span>
+              </span>
+            </div>
+            <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
+              <span class="text-[13px]">📦 ลัง</span>
+              <span class="flex items-center gap-1.5">
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">−</span>
+                <span class="mono text-[17px] w-10 text-center">9.0</span>
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">+</span>
+              </span>
+            </div>
+            <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
+              <span class="text-[13px]">🥫 กระป๋อง</span>
+              <span class="flex items-center gap-1.5">
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">−</span>
+                <span class="mono text-[17px] w-10 text-center">1.0</span>
+                <span class="wf-btn px-0 py-1.5 w-9 text-[16px]">+</span>
+              </span>
+            </div>
+            <p class="text-[10px] text-muted text-right">กก. · กดทีละ 0.5</p>
+          </div>
+
+          <div class="rounded-xl px-3.5 py-3 text-center" style="background:var(--accent-soft)">
+            <p class="text-[12px]" style="color:var(--accent-ink);opacity:.85">ยื่นเงินให้ผู้ทิ้ง</p>
+            <p class="mono text-[36px] font-medium leading-tight" style="color:var(--accent-ink)">฿50</p>
+            <p class="text-[10.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">ค่าของ ฿80 − ค่าขนขยะทั่วไป 2 ถุง ฿30</p>
+          </div>
+
+          <div class="wf-box px-3 py-2 flex items-center justify-between gap-2">
+            <span class="text-[11px] text-muted">ขายร้าน ≈ ฿124 · กำไรจุดนี้</span>
+            <span class="mono text-[14px] font-medium" style="color:var(--accent-ink)">≈ ฿74</span>
+          </div>
+
+          <div class="wf-btn wf-btn-primary py-4 text-[16px]">✅ จ่ายแล้ว · ไปจุดต่อไป</div>
+        </div>
+        <div class="tabbar">
+          <span><i>🗺️</i>รอบ</span><span class="on"><i>📋</i>งาน</span><span><i>💰</i>รายได้</span><span><i>👤</i>ฉัน</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7 · RECEIPT -->
+    <article id="s7" class="phone-anchor">
+      <div class="phone-cap">
+        <span class="phone-num">7</span>
+        <h2 class="disp text-[15px] font-bold">จบงาน · ได้อะไรบ้าง</h2>
+        <span class="chip chip-res">ผู้ทิ้ง</span>
+      </div>
+      <p class="text-[11.5px] text-muted leading-snug mb-1.5">
+        บอกความคุ้มให้ครบ ไม่ใช่แค่เงิน · ให้คะแนนเหลือ 👍 👎 · ตั้งรอบประจำได้ในปุ่มเดียว
+      </p>
+      <p class="chg">เดิม: ใบเสร็จราคาต่อกิโล + ดาว 5 ระดับ + ช่องพิมพ์รีวิว</p>
+
+      <div class="phone-frame">
+        <div class="status-bar"><span class="mono">13:15</span><span>▮▮▮ · 82%</span></div>
         <div class="appbar">
           <span class="text-[13px] font-semibold">เสร็จแล้ว 🎉</span>
-          <span class="wf-tag">Receipt</span>
+          <span class="wf-tag">Done</span>
         </div>
-        <div class="phone-body p-3.5 flex flex-col gap-3.5">
+        <div class="phone-body p-3.5 flex flex-col gap-3">
           <div class="rounded-xl px-3.5 py-3 text-center" style="background:var(--accent-soft)">
-            <p class="text-[10.5px]" style="color:var(--accent-ink);opacity:.85">คุณได้รับ</p>
-            <p class="mono text-[28px] font-medium leading-tight" style="color:var(--accent-ink)">฿78</p>
-            <p class="text-[10.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">หักค่าบริการขนขยะทั่วไป ฿30 แล้ว → สุทธิ ฿48</p>
+            <p class="text-[11px]" style="color:var(--accent-ink);opacity:.85">คุณได้รับ</p>
+            <p class="mono text-[30px] font-medium leading-tight" style="color:var(--accent-ink)">฿50</p>
+            <p class="text-[10.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">ค่าของ ฿80 − ค่าขนขยะทั่วไป ฿30</p>
           </div>
 
           <div class="wf-box px-3 py-2.5 flex flex-col gap-1.5">
-            <p class="wf-tag">รายการที่ชั่งจริง</p>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]">🥤 ขวด PET 4.8 กก.</span><span class="mono text-[11px] text-muted">฿45.60</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]">📦 ลัง 7.4 กก.</span><span class="mono text-[11px] text-muted">฿23.68</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]">🥫 กระป๋อง 0.6 กก.</span><span class="mono text-[11px] text-muted">฿28.80</span></div>
-            <div class="flex items-center justify-between"><span class="text-[11.5px]" style="color:var(--warn)">🗑️ ค่าขนขยะทั่วไป</span><span class="mono text-[11px]" style="color:var(--warn)">− ฿30</span></div>
+            <p class="wf-tag">รอบนี้ได้อะไร</p>
+            <p class="text-[12px]">💵 เงินสด ฿50</p>
+            <p class="text-[12px]">🗑️ ขยะทั่วไป 2 ถุงออกจากบ้านแล้ว</p>
+            <p class="text-[12px]">🚶 ไม่ต้องขนไปร้านรับซื้อเอง</p>
+            <p class="text-[12px]">♻️ 15 กก. ไม่ไปหลุมฝังกลบ</p>
           </div>
 
           <div class="wf-box px-3 py-2.5 flex items-center justify-between gap-2">
-            <span class="text-[11px] text-muted leading-snug">รวมปีนี้คุณแยกขยะออกจากหลุมฝังกลบ</span>
-            <span class="mono text-[15px] font-medium" style="color:var(--accent-ink)">86 กก.</span>
+            <span class="text-[11px] text-muted leading-snug">ซ.จุฬาฯ 12 เดือนนี้รวมกัน</span>
+            <span class="mono text-[15px] font-medium" style="color:var(--accent-ink)">327 กก.</span>
           </div>
 
-          <div class="wf-box px-3 py-3 flex flex-col items-center gap-1.5">
-            <p class="text-[11.5px] font-medium">ให้คะแนนพี่สมชาย</p>
-            <p class="text-[20px] tracking-[3px]">⭐⭐⭐⭐☆</p>
-            <div class="wf-skel w-full" style="width:80%"></div>
+          <div class="flex flex-col gap-2">
+            <p class="text-[12px] font-medium text-center">พี่สมชายเป็นยังไง</p>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="wf-btn py-3 text-[16px]">👍 ดี</div>
+              <div class="wf-btn py-3 text-[16px]">👎 ไม่โอเค</div>
+            </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <div class="wf-btn wf-btn-primary">ส่งคะแนน</div>
-            <div class="wf-btn">เรียกอีกครั้ง</div>
+          <div class="grid grid-cols-[1fr_auto] gap-2">
+            <div class="wf-btn wf-btn-primary">📅 นัดทุกอังคาร</div>
+            <div class="wf-btn">เสร็จ</div>
           </div>
         </div>
         <div class="tabbar">
@@ -534,10 +641,82 @@
 
   </main>
 
-  <p class="text-[11.5px] text-muted leading-relaxed max-w-[760px] pb-4">
-    ลำดับการใช้งาน: ผู้ทิ้งกรอกฟอร์ม (2) → หมุดโผล่บนแผนที่ซาเล้ง (1) → ซาเล้งเปิดดูรายละเอียดแล้วกดรับงาน (4)
-    ระหว่างนั้นผู้ทิ้งเห็นสถานะ (3) → ชั่งจริงหน้างานแล้วปิดงาน (5) → ทั้งสองฝั่งได้ใบสรุป (6)
+  <p class="text-[11.5px] text-muted leading-relaxed max-w-[760px] -mt-2">
+    ลำดับการใช้งาน: ผู้ทิ้งนับถุงแล้วเรียก (1) — ถ้าขยะน้อย แอปพาไปจุดรวมหรือรอบประจำแทน (2) → รอซาเล้ง (3) ·
+    ซาเล้งเห็นรอบที่คุ้มแล้ว (4) → รับทีละจุดในโหมดตัวใหญ่ (5) → ชั่งและยื่นเงินตัวเลขเดียว (6) → ผู้ทิ้งได้สรุป (7)
   </p>
+
+  <!-- NUMBERS + RESEARCH -->
+  <section class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pb-6">
+
+    <article id="numbers" class="phone-anchor rounded-2xl border border-line bg-surface shadow-card p-4 flex flex-col gap-3">
+      <div>
+        <p class="eyebrow">ความคุ้มค่า</p>
+        <h2 class="disp text-[16px] font-bold leading-tight">ตัวเลขตัวอย่าง · จุดที่ ① 15 กก.</h2>
+        <p class="text-[11.5px] text-muted mt-0.5">ราคาร้านรับซื้อ = ราคาเดียวกับต้นแบบที่กดได้ · ราคาที่ซาเล้งจ่ายบ้านยังเดาอยู่</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-[12px]">
+          <thead>
+            <tr class="text-left text-muted border-b border-line">
+              <th class="py-1.5 pr-2 font-semibold">วัสดุ</th>
+              <th class="py-1.5 px-2 font-semibold text-right">ซาเล้งจ่ายบ้าน /กก.</th>
+              <th class="py-1.5 px-2 font-semibold text-right">ร้านรับซื้อ /กก.</th>
+              <th class="py-1.5 pl-2 font-semibold text-right">จุด ①</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-line"><td class="py-1.5 pr-2">🥤 ขวด PET</td><td class="mono px-2 text-right">6.00</td><td class="mono px-2 text-right">9.50</td><td class="mono pl-2 text-right">5.0</td></tr>
+            <tr class="border-b border-line"><td class="py-1.5 pr-2">🥫 กระป๋อง</td><td class="mono px-2 text-right">32.00</td><td class="mono px-2 text-right">48.00</td><td class="mono pl-2 text-right">1.0</td></tr>
+            <tr class="border-b border-line"><td class="py-1.5 pr-2">📦 ลัง</td><td class="mono px-2 text-right">2.00</td><td class="mono px-2 text-right">3.20</td><td class="mono pl-2 text-right">9.0</td></tr>
+            <tr class="border-b border-line"><td class="py-1.5 pr-2">🍾 ขวดแก้ว</td><td class="mono px-2 text-right">0.80</td><td class="mono px-2 text-right">1.20</td><td class="mono pl-2 text-right">—</td></tr>
+            <tr><td class="py-1.5 pr-2" style="color:var(--warn)">🗑️ ขยะทั่วไป</td><td class="px-2 text-right" style="color:var(--warn)" colspan="2">ผู้ทิ้งจ่าย ถุงละ ฿15</td><td class="pl-2 text-right" style="color:var(--warn)">2 ถุง</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid gap-2 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+        <div class="rounded-xl px-3 py-2.5" style="background:var(--accent-soft)">
+          <p class="text-[11px] font-semibold" style="color:var(--accent-ink)">ผู้ทิ้ง</p>
+          <p class="text-[11px] leading-relaxed" style="color:var(--accent-ink)">ค่าของ 30 + 32 + 18 = ฿80<br>− ค่าขน ฿30</p>
+          <p class="mono text-[18px] font-medium" style="color:var(--accent-ink)">ได้ ฿50</p>
+        </div>
+        <div class="rounded-xl px-3 py-2.5" style="background:var(--sunken)">
+          <p class="text-[11px] font-semibold text-ink2">ซาเล้ง</p>
+          <p class="text-[11px] leading-relaxed text-ink2">ขายร้าน ฿124.30 − จ่ายบ้าน ฿80<br>+ ค่าขน ฿30</p>
+          <p class="mono text-[18px] font-medium text-ink">≈ ฿74 <span class="text-[10.5px] text-muted">ก่อนหักน้ำมัน</span></p>
+        </div>
+      </div>
+      <p class="text-[11px] text-muted leading-relaxed">
+        ข้อสังเกต: ค่าขนขยะทั่วไป (฿30) คือกำไรเกือบครึ่งของซาเล้ง ถ้าผู้ทิ้งไม่ยอมจ่าย จุดเดี่ยวแทบไม่คุ้ม
+        → เหตุผลที่ต้องมีจุดรวมและรอบประจำ
+      </p>
+    </article>
+
+    <article id="research" class="phone-anchor rounded-2xl border border-dashed p-4 flex flex-col gap-3" style="border-color:var(--line-strong);background:var(--surface)">
+      <div>
+        <p class="eyebrow">ต้องไปถามก่อน</p>
+        <h2 class="disp text-[16px] font-bold leading-tight">คำถามสัมภาษณ์ซาเล้ง &amp; ผู้ทิ้ง</h2>
+        <p class="text-[11.5px] text-muted mt-0.5">ได้คำตอบแล้วค่อยกลับมาแก้ตัวเลขในหน้านี้</p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="chip chip-col self-start">ซาเล้ง</span>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">วันนึงออกกี่รอบ ได้เงินเท่าไหร่ · ต่ำกว่ากี่กิโลถึงไม่คุ้มแวะ (15 กก. จริงไหม)</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">รับซื้อจากบ้านกิโลละเท่าไหร่ ขายร้านได้เท่าไหร่ (เช็กกับตาราง)</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">ยอมขนขยะทั่วไป/เศษอาหารไหม ถุงละเท่าไหร่ถึงยอม · เอาไปทิ้งที่ไหนได้จริง</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">มีสมาร์ทโฟนไหม ใช้ LINE / โทร / อ่านตัวหนังสือบนจอสะดวกแค่ไหน</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">ถ้าแอปเก็บค่าคอมมิชชัน ยอมจ่ายเท่าไหร่ต่อรอบ</span></div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="chip chip-res self-start">ผู้ทิ้ง</span>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">ตอนนี้ขวด/ลังเอาไปไหน ขาย ยกให้ฟรี หรือทิ้งรวม</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">ยอมจ่ายค่าขนขยะทั่วไปถุงละ ฿15 ไหม · ถ้าไม่ได้เงินจากของเก่าเลยยังจะใช้ไหม</span></div>
+        <div class="flex items-start gap-2"><i class="wf-chk mt-0.5"></i><span class="text-[12px] leading-snug">ยอมเดินไปวางจุดรวมไกลสุดกี่เมตร</span></div>
+      </div>
+    </article>
+
+  </section>
 </div>
 
 </body>

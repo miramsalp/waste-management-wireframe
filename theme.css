@@ -136,3 +136,13 @@ table{ border-collapse:collapse; }
 /* pins read smaller inside the ~300px showcase phones */
 .phone-frame .pin-card{ font-size:11px; gap:3px; padding:2px 6px; }
 .phone-frame .pin-kg{ font-size:9.5px; }
+
+/* round-2 additions (wireframe.html): feedback screen links, "what changed" note, progress meter */
+.scr-link{ display:inline-grid; place-items:center; min-width:22px; height:22px; padding:0 6px;
+  border-radius:6px; font-size:11px; font-weight:700; text-decoration:none;
+  background:var(--sunken); border:1px solid var(--line-strong); color:var(--ink-2); }
+.scr-link:hover{ border-color:var(--accent); color:var(--accent-ink); }
+.chg{ font-size:10.5px; line-height:1.4; color:var(--ink-2); background:var(--sunken);
+  border:1px dashed var(--line-strong); border-radius:8px; padding:4px 8px; margin-bottom:10px; }
+.wf-meter{ display:flex; height:8px; border-radius:99px; background:var(--canvas); overflow:hidden; }
+.wf-meter > i{ display:block; height:100%; background:var(--accent); }
