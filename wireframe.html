@@ -32,8 +32,16 @@
           Bangkok Waste Lab · แก้ตามผลทดสอบกับผู้ใช้ 10 คน · 10 หน้าจอ
         </div>
       </div>
-      <a href="index.html" class="shrink-0 no-underline text-[12.5px] font-semibold px-3 py-2 rounded-xl border"
-        style="border-color:var(--line-strong);background:var(--surface);color:var(--ink-2)">← ต้นแบบที่กดได้</a>
+      <div class="flex flex-wrap justify-end gap-2 shrink-0">
+        <button type="button" data-export="screens" title="A4 แนวนอน 3 หน้า: จอ 1–4 · 5–8 · 9–10"
+          class="text-[12.5px] font-semibold px-3 py-2 rounded-xl border"
+          style="border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)">📄 PDF หน้าจอ 1–10</button>
+        <button type="button" data-export="full" title="A4 แนวนอน 5 หน้า: ผลทดสอบ · จอ 1–10 · ตัวเลข &amp; คำถาม"
+          class="text-[12.5px] font-semibold px-3 py-2 rounded-xl border"
+          style="border-color:var(--line-strong);background:var(--surface);color:var(--ink-2)">📄 PDF ครบชุด</button>
+        <a href="index.html" class="no-underline text-[12.5px] font-semibold px-3 py-2 rounded-xl border"
+          style="border-color:var(--line-strong);background:var(--surface);color:var(--ink-2)">← ต้นแบบที่กดได้</a>
+      </div>
     </div>
     <nav class="jump" aria-label="ข้ามไปยังส่วนต่าง ๆ">
       <a href="#feedback">ผลทดสอบ → แก้อะไร</a>
@@ -1037,6 +1045,89 @@
 
   </section>
 </div>
+
+<script>
+// PDF export: clone the screens into A4-landscape pages, scale each page to fit, then print.
+// Everything else on the board stays non-interactive.
+(function(){
+  var PAGE_W = 1047, PAGE_H = 714, HEAD_H = 34, COL_W = 300, GAP = 16;
+  var TITLE = 'Bangkok Waste Lab · Wireframe รอบ 3';
+  var SCREEN_PAGES = [
+    { ids:['s1','s2','s3','s4'], label:'หน้าจอ 1–4 · ผู้ทิ้ง: ตั้งค่า → เรียก → รอซาเล้ง' },
+    { ids:['s5','s6','s7','s8'], label:'หน้าจอ 5–8 · ซาเล้งเก็บ → ผู้ทิ้งได้สรุป' },
+    { ids:['s9','s10'],          label:'หน้าจอ 9–10 · ร้านค้า &amp; นิติฯ' }
+  ];
+  var root = null, prevTheme = null;
+
+  function clone(id){
+    var c = document.getElementById(id).cloneNode(true);
+    c.removeAttribute('id');
+    Array.prototype.forEach.call(c.querySelectorAll('[id]'), function(n){ n.removeAttribute('id'); });
+    Array.prototype.forEach.call(c.querySelectorAll('details'), function(n){ n.parentNode.removeChild(n); });
+    return c;
+  }
+  function grid(ids, colW){
+    var row = document.createElement('div');
+    row.className = 'print-row';
+    row.style.gridTemplateColumns = 'repeat(' + ids.length + ',' + colW + 'px)';
+    ids.forEach(function(id){ row.appendChild(clone(id)); });
+    return { node:row, width:ids.length*colW + (ids.length-1)*GAP };
+  }
+  function addPage(label, content){
+    var page = document.createElement('section');
+    page.className = 'print-page';
+    page.innerHTML = '<div class="print-head"><b class="disp">' + TITLE + '</b><span class="pg-label">' + label + '</span></div>';
+    var fit = document.createElement('div');
+    fit.className = 'print-fit';
+    fit.style.width = content.width + 'px';
+    fit.appendChild(content.node);
+    page.appendChild(fit);
+    root.appendChild(page);
+  }
+
+  function build(mode){
+    destroy();
+    prevTheme = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');   // print on white, whatever the screen theme
+    root = document.createElement('div');
+    root.id = 'print-root';
+    document.body.appendChild(root);
+
+    if (mode === 'full'){
+      var fb = clone('feedback');
+      fb.classList.remove('phone-anchor');
+      var cards = fb.querySelector('.grid');
+      if (cards) cards.className = 'print-cards';
+      addPage('ผลทดสอบกับผู้ใช้ 10 คน → แก้อะไร', { node:fb, width:1240 });
+    }
+    SCREEN_PAGES.forEach(function(p){ addPage(p.label, grid(p.ids, COL_W)); });
+    if (mode === 'full') addPage('ตัวเลขความคุ้มค่า · คำถามที่ยังต้องตอบ', grid(['numbers','research'], 560));
+
+    // number the pages, then scale each one down until it fits the A4 box
+    var pages = root.querySelectorAll('.print-page');
+    Array.prototype.forEach.call(pages, function(page, i){
+      page.querySelector('.pg-label').innerHTML += ' · หน้า ' + (i+1) + '/' + pages.length;
+      var fit = page.querySelector('.print-fit');
+      fit.style.zoom = 1;
+      var w = parseFloat(fit.style.width), h = fit.offsetHeight;
+      fit.style.zoom = Math.min(1, PAGE_W / w, (PAGE_H - HEAD_H) / h);
+    });
+  }
+
+  function destroy(){
+    if (root){ root.parentNode.removeChild(root); root = null; }
+    if (prevTheme === null) document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', prevTheme);
+    prevTheme = null;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-export]'), function(btn){
+    btn.addEventListener('click', function(){ build(btn.dataset.export); window.print(); });
+  });
+  window.addEventListener('beforeprint', function(){ if (!root) build('screens'); });  // Ctrl+P too
+  window.addEventListener('afterprint', destroy);
+})();
+</script>
 
 </body>
 </html>

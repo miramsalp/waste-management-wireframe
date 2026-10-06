@@ -158,3 +158,26 @@ table{ border-collapse:collapse; }
   background:var(--sunken); border:1px solid var(--line-strong); color:var(--ink-2); }
 .frame.big > header, .frame.big > main{ zoom:1.15; }
 details > summary{ cursor:pointer; }
+
+/* ── PDF export (wireframe.html): A4 landscape pages built into #print-root ── */
+#print-root{ position:absolute; left:-10000px; top:0; background:var(--surface); }
+.print-page{ width:1047px; height:714px; overflow:hidden; display:flex; flex-direction:column; gap:10px;
+  background:var(--surface); }
+.print-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex:none;
+  padding-bottom:6px; border-bottom:1px solid var(--line); font-size:12px; color:var(--muted); }
+.print-head b{ color:var(--ink); font-size:14px; }
+.print-fit{ flex:none; }
+.print-row{ display:grid; gap:16px; align-items:stretch; }
+.print-row > .phone-anchor{ display:flex; flex-direction:column; }
+.print-row .phone-frame{ flex:1; height:auto; box-shadow:none; }
+.print-row .phone-body{ overflow:visible; }
+.print-cards{ display:grid; gap:12px; grid-template-columns:repeat(4,1fr); }
+@page{ size:A4 landscape; margin:10mm; }
+@media print{
+  body{ background:var(--surface); }
+  body > *:not(#print-root){ display:none !important; }
+  #print-root{ position:static; }
+  .print-page{ break-after:page; }
+  .print-page:last-child{ break-after:auto; }
+  *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; animation:none !important; }
+}
