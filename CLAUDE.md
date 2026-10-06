@@ -14,10 +14,11 @@ walk-to drop points.
 ## Files
 
 - `index.html` — the interactive prototype (mobile-first, one 430px phone frame).
-- `wireframe.html` — a desktop **showcase board**: 7 non-interactive mobile screens side by
+- `wireframe.html` — a desktop **showcase board**: 10 non-interactive mobile screens side by
   side, a "feedback → changes" grid above, numbers + interview questions below, and a sticky jump-nav. This is the design artefact for class discussion.
 - `theme.css` — **shared** design tokens + base styles + wireframe/map/phone-board CSS.
   Both pages link it; change a color here, not in the pages.
+- `research/user-tests-round3.md` — raw notes from 10 user tests (TC1–TC10) that drove round 3.
 - `README.md`, `.gitignore` — housekeeping.
 
 No build step, no install. Open either HTML directly in a browser, or serve the folder
@@ -48,18 +49,28 @@ One IIFE at the bottom holds all state: `points`, `MATS` prices, `THRESHOLD`, `s
 and `render*()` functions that rebuild innerHTML. Both views share the same `points` array,
 so adding waste as a resident immediately changes the collector's queue — that is the
 demo's punchline, keep it working.
+Round-3 extras: header `ก+` (`.frame.big` zoom) and theme toggle, a dismissable first-run
+tutorial, verified saleng ID + call buttons on the en-route card, share button, and a
+`🔊 ฟัง` button on job cards using `speechSynthesis` (th-TH). Per-viewer prefs live in
+`localStorage` (`bwl-*` keys) behind try/catch.
 
 ### `wireframe.html`
-Round 2, reworked from peer feedback. `#feedback` maps each feedback point to screen links
-(`.scr-link`). Seven `<article class="phone-anchor">` cards in `.board`, each = caption +
-`.chg` note ("เดิม: …", what changed) + role chip + `.phone-frame` (status bar → appbar →
+Round 3, reworked from 10 user tests (`research/user-tests-round3.md`). `#feedback` maps
+each tester finding (`.tc` tags TC1–TC10) to screen links (`.scr-link`); round 2's changes
+sit in a `<details>`. Ten `<article class="phone-anchor">` cards in `.board`, each = caption +
+`.chg` note (what changed / which TC) + role chip + `.phone-frame` (status bar → appbar →
 scrollable `.phone-body` → fake `.tabbar`).
-Flow: 1 two-question request (ผู้ทิ้ง) · 2 small amount → drop point / scheduled round (ผู้ทิ้ง) ·
-3 waiting + call (ผู้ทิ้ง) · 4 route with trip profit (ซาเล้ง) · 5 big-type one-job mode (ซาเล้ง) ·
-6 weigh with steppers + one cash number (ซาเล้ง) · 7 receipt + value + 👍👎 (ผู้ทิ้ง).
+Flow: 1 one-time setup: pin + house photo + payout + "what sells" picture guide (ผู้ทิ้ง) ·
+2 request with units, photos, time, upfront price range (ผู้ทิ้ง) · 3 small amount → leave at
+door for scheduled round / staffed pool point (ผู้ทิ้ง) · 4 waiting + verified saleng ID + call
+(ผู้ทิ้ง) · 5 list-first route ending at the BMA drop site (ซาเล้ง) · 6 one job with photos,
+voice, SMS fallback (ซาเล้ง) · 7 weigh + scale photo + app-computed pay (ซาเล้ง) · 8 receipt
+with evidence, where it went, share, problem reasons (ผู้ทิ้ง) · 9 shop/office recurring
+(ร้านค้า, `.chip-org`) · 10 juristic village dashboard (นิติฯ).
 Below the board: `#numbers` (worked example for one 15 kg stop; shop prices = `MATS` in
 `index.html`; household buy prices and the ฿15/bag fee are assumptions) and `#research`
-(interview questions). Keep the ฿50 / ฿74 / ฿150 figures consistent across screens 4–7 and the table.
+(answered ✓ / open business questions). Keep the ฿50 / ฿74 / ฿150 figures (and the
+฿40–60 estimate range) consistent across screens 2 and 5–8 and the table.
 
 ## Conventions
 
