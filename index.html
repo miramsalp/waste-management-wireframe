@@ -32,9 +32,11 @@
         <div class="disp text-[17px] font-bold leading-tight">Bangkok Waste Lab</div>
         <div class="text-[12.5px] text-muted leading-tight">จุดทิ้งที่คนใช้จริง · เขตปทุมวัน</div>
       </div>
-      <div class="text-right shrink-0">
-        <div class="eyebrow">Threshold</div>
-        <div class="mono text-[13px] font-medium" style="color:var(--accent-ink)">15 kg</div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="btn-big" aria-pressed="false" title="ตัวหนังสือใหญ่"
+          class="disp w-9 h-9 rounded-lg border border-line bg-surface text-[13px] font-bold text-ink2">ก+</button>
+        <button id="btn-theme" title="สลับสว่าง / มืด"
+          class="w-9 h-9 rounded-lg border border-line bg-surface text-[15px] text-ink2">◐</button>
       </div>
     </div>
     <div class="px-5 pb-3">
@@ -61,6 +63,28 @@
 
   <!-- Resident view -->
   <main id="view-resident" class="px-5 py-5 flex flex-col gap-6">
+
+    <section id="r-tutorial" class="rounded-2xl border border-line bg-surface shadow-card p-4 flex flex-col gap-3">
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="disp text-[15px] font-bold">ใช้ยังไง · 3 ขั้น</h2>
+        <span class="text-[10.5px] text-muted">ครั้งแรกเท่านั้น</span>
+      </div>
+      <ol class="flex flex-col gap-1.5 text-[13px] leading-snug">
+        <li><b class="mono" style="color:var(--accent-ink)">1</b> แยกขวด กระป๋อง ลัง ใส่ถุง</li>
+        <li><b class="mono" style="color:var(--accent-ink)">2</b> เอาไปวางจุดรวมใกล้บ้าน แล้วกด <b>+ เพิ่มขยะของฉัน</b></li>
+        <li><b class="mono" style="color:var(--accent-ink)">3</b> ทั้งจุดครบ 15 กก. ซาเล้งมารับเอง ไม่ต้องรอ</li>
+      </ol>
+      <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🥤 ✓ ขวด PET</span>
+        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🥫 ✓ กระป๋อง</span>
+        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">📦 ✓ ลัง</span>
+        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🍾 ✓ ขวดแก้ว</span>
+        <span class="rounded-lg py-1.5" style="background:var(--warn-soft);color:var(--warn)">🧃 ? กล่องนม</span>
+        <span class="rounded-lg py-1.5" style="background:var(--warn-soft);color:var(--warn)">🛍️ ✗ ถุงก๊อบแก๊บ</span>
+      </div>
+      <button id="btn-tut" class="rounded-xl py-2.5 text-[13.5px] font-semibold border"
+        style="border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)">เข้าใจแล้ว</button>
+    </section>
 
     <section class="flex flex-col gap-3">
       <div class="flex items-baseline justify-between">
@@ -130,15 +154,31 @@
             <span class="block mt-0.5 text-[11px] opacity-85">3 ถุงแยกจากหอ · PET 0.8 · อะลูฯ 0.3 · กระดาษ 0.9</span>
           </button>
           <p id="r-mine" class="mt-2 text-[11.5px] text-muted text-center">วันนี้คุณยังไม่ได้เพิ่มขยะเข้าจุดนี้</p>
+          <button id="btn-share" class="hidden mx-auto mt-1.5 block text-[12px] font-semibold px-3 py-1.5 rounded-full border border-line bg-sunken text-ink2">📤 แชร์ให้เพื่อน</button>
         </div>
 
         <div id="r-badge" class="hidden mx-5 mb-5 rounded-xl px-4 py-3" style="background:var(--accent-soft)">
           <p class="disp text-[14px] font-semibold" style="color:var(--accent-ink)">🎉 ครบเกณฑ์แล้ว! แจ้งซาเล้งในพื้นที่เรียบร้อย</p>
           <p class="text-[11.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">Threshold met! Local Saleng notified.</p>
         </div>
-        <div id="r-enroute" class="hidden mx-5 mb-5 rounded-xl px-4 py-3 border border-line bg-sunken">
-          <p class="text-[13.5px] font-semibold">🛺 พี่สมชายรับงานแล้ว · ถึงจุดใน <span id="r-eta" class="mono">7</span> นาที</p>
-          <p class="text-[11.5px] text-muted mt-0.5">Saleng en route — ยกถุงไปวางได้เลย ไม่ต้องเฝ้าที่จุด</p>
+        <div id="r-enroute" class="hidden mx-5 mb-5 rounded-xl px-4 py-3 border border-line bg-sunken flex-col gap-3">
+          <div>
+            <p class="text-[13.5px] font-semibold">🛺 ซาเล้งรับงานแล้ว · ถึงจุดใน <span id="r-eta" class="mono">7</span> นาที</p>
+            <p class="text-[11.5px] text-muted mt-0.5">Saleng en route — ยกถุงไปวางได้เลย ไม่ต้องเฝ้าที่จุด</p>
+          </div>
+          <div class="flex items-center gap-3 rounded-lg bg-surface border border-line px-3 py-2.5">
+            <span class="w-11 h-11 rounded-full grid place-items-center text-[20px] shrink-0" style="background:var(--accent-soft)">🧑🏽</span>
+            <span class="min-w-0">
+              <span class="block text-[13.5px] font-semibold">พี่สมชาย ใจดี</span>
+              <span class="block text-[11.5px] text-ink2">สามล้อเครื่อง · <span class="mono">3กข 1234 กทม.</span></span>
+              <span class="block text-[11px] font-semibold" style="color:var(--accent-ink)">✓ ยืนยันตัวตน · สมาคมซาเล้งฯ</span>
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button data-call="app" class="rounded-lg py-2.5 text-[13px] font-semibold" style="background:var(--accent);color:#fff">📞 โทรผ่านแอป</button>
+            <button data-call="phone" class="rounded-lg py-2.5 text-[13px] font-semibold border border-line bg-surface text-ink2">📱 เบอร์มือถือ</button>
+          </div>
+          <p id="r-callnote" class="hidden text-[11.5px] text-muted text-center"></p>
         </div>
       </article>
     </section>
@@ -150,7 +190,7 @@
 
     <section class="flex flex-col gap-3">
       <div class="flex items-baseline justify-between gap-3">
-        <h2 class="eyebrow">ราคากลางรับซื้อ</h2>
+        <h2 class="eyebrow">ราคารับซื้อวันนี้</h2>
         <span class="text-[11px] text-muted">อัปเดต 4 ก.ย. 2569</span>
       </div>
       <div class="rounded-2xl bg-surface border border-line shadow-card overflow-hidden">
@@ -326,7 +366,9 @@
 
     var enroute = document.getElementById('r-enroute');
     enroute.classList.toggle('hidden', home.job !== 'enroute');
+    enroute.classList.toggle('flex', home.job === 'enroute');
     if (home.job === 'enroute') document.getElementById('r-eta').textContent = etaOf(home);
+    document.getElementById('btn-share').classList.toggle('hidden', mine.count === 0);
 
     var mineEl = document.getElementById('r-mine');
     if (mine.count === 0){
@@ -399,8 +441,11 @@
             'กำลังไป · En Route · ถึงใน ' + etaOf(p) + ' นาที</span>' +
           '<button data-act="cancel" data-id="' + p.id + '" class="text-[11.5px] underline underline-offset-2 shrink-0" style="color:var(--accent-ink)">ยกเลิก</button>' +
         '</div>'
-      : '<button data-act="accept" data-id="' + p.id + '" class="w-full rounded-xl py-3 text-[14px] font-semibold transition-transform active:scale-[.985]" ' +
-          'style="background:var(--accent);color:#fff">รับงาน &amp; เริ่มนำทาง · Accept Pickup</button>';
+      : '<div class="grid grid-cols-[auto_1fr] gap-2">' +
+          '<button data-act="speak" data-id="' + p.id + '" class="rounded-xl px-4 py-3 text-[14px] font-semibold border border-line bg-sunken text-ink2" title="อ่านงานนี้ให้ฟัง">🔊 ฟัง</button>' +
+          '<button data-act="accept" data-id="' + p.id + '" class="rounded-xl py-3 text-[14px] font-semibold transition-transform active:scale-[.985]" ' +
+            'style="background:var(--accent);color:#fff">รับงาน · Accept</button>' +
+        '</div>';
 
     return '<li class="rise rounded-2xl bg-surface shadow-card overflow-hidden border" style="border-color:' +
         (enroute ? 'var(--accent)' : 'var(--line)') + '">' +
@@ -424,7 +469,9 @@
             '<p class="mono text-[18px] font-medium leading-tight" style="color:var(--accent-ink)">฿' + lo + '–' + hi + '</p>' +
           '</div>' +
         '</div>' +
-        '<div class="flex flex-wrap gap-1.5">' + chips + '</div>' +
+        '<div class="flex flex-wrap gap-1.5">' + chips +
+          '<span class="text-[10.5px] font-semibold px-2 py-0.5 rounded-md" style="background:var(--accent-soft);color:var(--accent-ink)">✓ แยกมาแล้ว</span>' +
+        '</div>' +
       '</div>' +
       '<div class="px-4 pb-4">' + action + '</div>' +
     '</li>';
@@ -465,8 +512,78 @@
     var btn = e.target.closest('button[data-act]');
     if (!btn) return;
     var p = points.filter(function(x){ return x.id === btn.dataset.id; })[0];
+    if (btn.dataset.act === 'speak'){ speak(sayJob(p)); return; }
     p.job = btn.dataset.act === 'accept' ? 'enroute' : null;
     renderCollector();
+  });
+
+  // Voice readout for collectors who read slowly (round-3 TC6)
+  function sayJob(p){
+    return p.name + ' ' + p.place + ' · ขับ ' + p.driveKm.toFixed(1) + ' กิโลเมตร · ' +
+      'ขวด ' + p.mix.pet.toFixed(0) + ' กิโล ลัง ' + p.mix.card.toFixed(0) + ' กิโล กระป๋อง ' + p.mix.alu.toFixed(0) + ' กิโล · ' +
+      'แยกมาแล้ว · ได้ประมาณ ' + round5(bahtOf(p)) + ' บาท';
+  }
+  function speak(text){
+    try {
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'th-TH'; u.rate = 0.9;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // Per-viewer conveniences: big text, theme, tutorial dismissed (round-3 TC4 TC7)
+  function load(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function save(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+
+  var bigBtn = document.getElementById('btn-big');
+  function setBig(on){
+    frame.classList.toggle('big', on);
+    bigBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    bigBtn.style.background = on ? 'var(--accent-soft)' : '';
+    bigBtn.style.color = on ? 'var(--accent-ink)' : '';
+    save('bwl-big', on ? '1' : '0');
+  }
+  bigBtn.addEventListener('click', function(){ setBig(!frame.classList.contains('big')); });
+  setBig(load('bwl-big') === '1');
+
+  function setTheme(t){
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    else document.documentElement.removeAttribute('data-theme');
+  }
+  document.getElementById('btn-theme').addEventListener('click', function(){
+    var dark = getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim().toLowerCase() !== '#fbfcfa';
+    var next = dark ? 'light' : 'dark';
+    setTheme(next);
+    save('bwl-theme', next);
+  });
+  setTheme(load('bwl-theme'));
+
+  var tut = document.getElementById('r-tutorial');
+  if (load('bwl-tut') === 'done') tut.classList.add('hidden');
+  document.getElementById('btn-tut').addEventListener('click', function(){
+    tut.classList.add('hidden');
+    save('bwl-tut', 'done');
+  });
+
+  document.getElementById('r-enroute').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-call]');
+    if (!btn) return;
+    var note = document.getElementById('r-callnote');
+    note.textContent = btn.dataset.call === 'app'
+      ? 'เดโม: จะโทรผ่านแอปหาพี่สมชาย (ไม่เสียค่าโทร)'
+      : 'เดโม: จะโทรเข้าเบอร์ 08x-xxx-1234';
+    note.classList.remove('hidden');
+  });
+
+  document.getElementById('btn-share').addEventListener('click', function(){
+    var text = 'วันนี้ฉันแยกขยะรีไซเคิล ' + (mine.count*2).toFixed(1) + ' กก. ไม่ไปหลุมฝังกลบ ♻️ · Bangkok Waste Lab';
+    var btn = this;
+    if (navigator.share){
+      navigator.share({ text:text }).catch(function(){});
+    } else if (navigator.clipboard){
+      navigator.clipboard.writeText(text).then(function(){ btn.textContent = '✓ คัดลอกข้อความแล้ว'; }, function(){});
+    }
   });
 
   document.getElementById('btn-add').addEventListener('click', function(){

@@ -146,3 +146,15 @@ table{ border-collapse:collapse; }
   border:1px dashed var(--line-strong); border-radius:8px; padding:4px 8px; margin-bottom:10px; }
 .wf-meter{ display:flex; height:8px; border-radius:99px; background:var(--canvas); overflow:hidden; }
 .wf-meter > i{ display:block; height:100%; background:var(--accent); }
+
+/* round-3 additions: extra role chip, tester tags, photo placeholder, voice bubble, big-text mode */
+.chip-org{ background:var(--warn-soft); color:var(--warn); }
+.tc{ display:inline-block; font-size:10px; font-weight:700; padding:1px 6px; border-radius:6px;
+  background:var(--sunken); border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+.wf-photo{ border:1px dashed var(--line-strong); border-radius:8px; display:grid; place-items:center;
+  font-size:10px; color:var(--muted); text-align:center; line-height:1.2;
+  background:repeating-linear-gradient(45deg, var(--sunken) 0 6px, var(--line) 6px 7px); }
+.speech{ position:relative; border-radius:12px; padding:8px 10px; font-size:11.5px; line-height:1.45;
+  background:var(--sunken); border:1px solid var(--line-strong); color:var(--ink-2); }
+.frame.big > header, .frame.big > main{ zoom:1.15; }
+details > summary{ cursor:pointer; }
