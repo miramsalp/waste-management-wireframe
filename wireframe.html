@@ -1050,7 +1050,8 @@
 // PDF export: clone the screens into A4-landscape pages, scale each page to fit, then print.
 // Everything else on the board stays non-interactive.
 (function(){
-  var PAGE_W = 1047, PAGE_H = 714, HEAD_H = 34, COL_W = 300, GAP = 16;
+  // A4 landscape minus 10 mm margins ≈ 1047 × 718 CSS px; keep 4% spare for print-time re-layout
+  var PAGE_W = 1047, PAGE_H = 714, PAGE_GAP = 10, SAFE = 0.96, COL_W = 300, GAP = 16;
   var TITLE = 'Bangkok Waste Lab · Wireframe รอบ 3';
   var SCREEN_PAGES = [
     { ids:['s1','s2','s3','s4'], label:'หน้าจอ 1–4 · ผู้ทิ้ง: ตั้งค่า → เรียก → รอซาเล้ง' },
@@ -1077,11 +1078,14 @@
     var page = document.createElement('section');
     page.className = 'print-page';
     page.innerHTML = '<div class="print-head"><b class="disp">' + TITLE + '</b><span class="pg-label">' + label + '</span></div>';
+    var holder = document.createElement('div');   // un-zoomed box: its size = the zoomed content's real size
+    holder.className = 'print-holder';
     var fit = document.createElement('div');
     fit.className = 'print-fit';
     fit.style.width = content.width + 'px';
     fit.appendChild(content.node);
-    page.appendChild(fit);
+    holder.appendChild(fit);
+    page.appendChild(holder);
     root.appendChild(page);
   }
 
@@ -1103,14 +1107,23 @@
     SCREEN_PAGES.forEach(function(p){ addPage(p.label, grid(p.ids, COL_W)); });
     if (mode === 'full') addPage('ตัวเลขความคุ้มค่า · คำถามที่ยังต้องตอบ', grid(['numbers','research'], 560));
 
-    // number the pages, then scale each one down until it fits the A4 box
+    // number the pages, then scale each one down until it really fits the A4 box.
+    // Zoomed Thai text can re-wrap and grow, so measure again after zooming and keep shrinking.
     var pages = root.querySelectorAll('.print-page');
     Array.prototype.forEach.call(pages, function(page, i){
       page.querySelector('.pg-label').innerHTML += ' · หน้า ' + (i+1) + '/' + pages.length;
+      var head = page.querySelector('.print-head');
+      var holder = page.querySelector('.print-holder');
       var fit = page.querySelector('.print-fit');
+      var availH = (PAGE_H - head.offsetHeight - PAGE_GAP) * SAFE;
+      var availW = PAGE_W * SAFE;
       fit.style.zoom = 1;
-      var w = parseFloat(fit.style.width), h = fit.offsetHeight;
-      fit.style.zoom = Math.min(1, PAGE_W / w, (PAGE_H - HEAD_H) / h);
+      var z = Math.min(1, availW / parseFloat(fit.style.width), availH / holder.offsetHeight);
+      fit.style.zoom = z;
+      for (var n = 0; n < 30 && (holder.offsetHeight > availH || holder.scrollWidth > availW); n++){
+        z *= 0.97;
+        fit.style.zoom = z;
+      }
     });
   }
 
