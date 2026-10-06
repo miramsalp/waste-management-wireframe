@@ -77,8 +77,12 @@ Below the board: `#numbers` (worked example for one 15 kg stop; shop prices = `M
 - Plain ES5-flavoured JS, no framework, no modules, no build. Keep it that way.
 - Thai is the primary UI language; secondary English labels are muted/smaller.
 - `wireframe.html` is deliberately fake: its buttons are `<div class="wf-btn">`, not
-  `<button>`, so nothing looks clickable-but-broken. It has no JavaScript at all.
-  Do not wire it up unless asked.
+  `<button>`, so nothing looks clickable-but-broken. Its only JavaScript is the PDF export
+  (header buttons `[data-export]`, also hooked to Ctrl+P via `beforeprint`): it clones the
+  `#s1`–`#s10` cards into A4-landscape `.print-page`s inside `#print-root` (pages 1–4 / 5–8 /
+  9–10, plus feedback and numbers pages for "ครบชุด"), zooms each page to fit, forces the
+  light theme, prints, and removes itself on `afterprint`. Print CSS lives in `theme.css`.
+  Do not wire up the mock screens themselves unless asked.
 - Maps are hand-drawn inline SVG (blocks, roads, park, canal) with HTML pins positioned
   in percentages on top — no map library, no tiles, no network calls.
 - Both light and dark themes must stay legible; check any new color in both.
