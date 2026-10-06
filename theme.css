@@ -166,7 +166,7 @@ details > summary{ cursor:pointer; }
 .print-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex:none;
   padding-bottom:6px; border-bottom:1px solid var(--line); font-size:12px; color:var(--muted); }
 .print-head b{ color:var(--ink); font-size:14px; }
-.print-holder{ flex:none; }
+.print-holder{ flex:none; align-self:flex-start; width:max-content; }
 .print-row{ display:grid; gap:16px; align-items:stretch; }
 .print-row > .phone-anchor{ display:flex; flex-direction:column; }
 .print-row .phone-frame{ flex:1; height:auto; box-shadow:none; }

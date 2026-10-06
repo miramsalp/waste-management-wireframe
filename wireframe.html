@@ -1120,7 +1120,7 @@
       fit.style.zoom = 1;
       var z = Math.min(1, availW / parseFloat(fit.style.width), availH / holder.offsetHeight);
       fit.style.zoom = z;
-      for (var n = 0; n < 30 && (holder.offsetHeight > availH || holder.scrollWidth > availW); n++){
+      for (var n = 0; n < 30 && (holder.offsetHeight > availH || holder.offsetWidth > availW); n++){
         z *= 0.97;
         fit.style.zoom = z;
       }
