@@ -1,612 +1,1006 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="ต้นแบบระบบรวมขยะรีไซเคิลที่จุดทิ้งเดินถึง — สะสมให้ถึง 15 กก. เพื่อให้ซาเล้งคุ้มค่ามารับ">
-<title>Bangkok Waste Lab</title>
+<title>ฝาถังอัจฉริยะ · Smart Lid prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<link rel="stylesheet" href="theme.css">
-<script>
-  tailwind.config = { theme: { extend: { colors: {
-    ground:'var(--ground)', canvas:'var(--canvas)', surface:'var(--surface)', sunken:'var(--sunken)',
-    line:'var(--line)', lineStrong:'var(--line-strong)',
-    ink:'var(--ink)', ink2:'var(--ink-2)', muted:'var(--muted)',
-    accent:'var(--accent)', accentInk:'var(--accent-ink)', accentSoft:'var(--accent-soft)',
-    warn:'var(--warn)', warnSoft:'var(--warn-soft)'
-  }, boxShadow:{ card:'var(--shadow)' } } } };
-</script>
+<style>
+*{ box-sizing:border-box; }
+[hidden]{ display:none !important; }
+:root{
+  --ground:#E9EDE8; --surface:#FFFFFF; --sunken:#F0F3EF;
+  --line:#DCE2DA; --line-strong:#C6CFC3;
+  --ink:#141B17; --ink-2:#3A4741; --muted:#68766E;
+  --accent:#0F9D6B; --accent-ink:#0A6B49; --accent-soft:#E0F2EA;
+  --warn:#A8681A; --warn-soft:#F8EEDB;
+  --blue:#2F6BD8; --blue-soft:#E3ECFB;
+  --glass:rgba(255,255,255,.86);
+  --shadow:0 1px 2px rgba(20,27,23,.06), 0 12px 32px -18px rgba(20,27,23,.4);
+}
+:root[data-theme="dark"]{
+  --ground:#0B0F0D; --surface:#19211E; --sunken:#131A18;
+  --line:#28322E; --line-strong:#38443F;
+  --ink:#E9EFEB; --ink-2:#C2CEC7; --muted:#8B9A92;
+  --accent:#35C596; --accent-ink:#7FE2C0; --accent-soft:#123328;
+  --warn:#DDA65A; --warn-soft:#2C2314;
+  --blue:#7FA8F0; --blue-soft:#17243A;
+  --glass:rgba(25,33,30,.88);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px -18px rgba(0,0,0,.8);
+}
+html,body{ margin:0; height:100%; overflow:hidden; }
+body{ background:var(--ground); color:var(--ink);
+  font-family:'IBM Plex Sans Thai','Segoe UI',system-ui,sans-serif; font-size:14px; line-height:1.55; }
+.disp{ font-family:'Anuphan','IBM Plex Sans Thai',system-ui,sans-serif; }
+.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+.eyebrow{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+.en{ color:var(--muted); font-size:.85em; }
 
+#stage{ position:fixed; inset:0; }
+#stage canvas{ display:block; touch-action:none; }
+#loading{ position:fixed; inset:0; display:grid; place-items:center; color:var(--muted); }
+
+/* overlay tags projected from 3D */
+#tags{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+#tags svg{ position:absolute; inset:0; width:100%; height:100%; }
+#tags line{ stroke:var(--ink-2); stroke-width:1; opacity:.6; }
+.dot{ position:absolute; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 0 3px var(--glass); }
+.chip{ position:absolute; transform:translate(-50%,-50%); white-space:nowrap; padding:5px 10px; border-radius:10px;
+  background:var(--glass); border:1px solid var(--line-strong); box-shadow:var(--shadow); font-size:12.5px; line-height:1.3;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transition:opacity .25s; }
+.chip b{ font-weight:600; }
+.chip small{ display:block; color:var(--muted); font-size:11px; }
+.chip.bag{ border-color:var(--accent); }
+.chip.pop{ animation:pop .35s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes pop{ from{ transform:translate(-50%,-50%) scale(.7); opacity:0 } to{ transform:translate(-50%,-50%) scale(1); opacity:1 } }
+
+/* HUD */
+.card{ background:var(--glass); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+.top{ position:fixed; top:14px; left:14px; right:14px; display:flex; gap:10px; align-items:flex-start; justify-content:space-between; pointer-events:none; }
+.top > *{ pointer-events:auto; }
+.brand{ padding:10px 14px; display:flex; gap:10px; align-items:center; }
+.brand .logo{ width:30px; height:30px; border-radius:9px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:700; }
+.brand h1{ margin:0; font-size:16px; line-height:1.2; }
+.tools{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; padding:6px; }
+button{ font:inherit; color:inherit; cursor:pointer; }
+.tb{ border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:6px 11px; font-size:13px; }
+.tb:hover{ border-color:var(--line-strong); }
+.tb[aria-pressed="true"]{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink); }
+.tb.primary{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+:root[data-theme="dark"] .tb.primary{ color:#06120D; }
+
+.panel{ position:fixed; right:14px; top:76px; bottom:84px; width:370px; overflow-y:auto; padding:18px 18px 20px; }
+.panel h2{ margin:4px 0 8px; font-size:22px; line-height:1.25; }
+.panel p{ margin:0 0 10px; color:var(--ink-2); }
+.panel ul{ margin:0 0 12px; padding-left:18px; color:var(--ink-2); }
+.panel li{ margin:3px 0; }
+.who{ display:inline-flex; gap:6px; align-items:center; font-size:12px; font-weight:600; padding:2px 9px; border-radius:99px;
+  background:var(--accent-soft); color:var(--accent-ink); }
+.who.col{ background:var(--blue-soft); color:var(--blue); }
+.who.biz{ background:var(--warn-soft); color:var(--warn); }
+.note{ font-size:12.5px; color:var(--muted); border-left:3px solid var(--line-strong); padding:2px 0 2px 10px; margin:10px 0; }
+.note.assume{ border-color:var(--warn); }
+.row{ display:flex; gap:8px; align-items:center; justify-content:space-between; }
+
+/* mini phone */
+.phone{ margin:14px auto 4px; width:210px; border-radius:26px; padding:8px; background:#111614; box-shadow:var(--shadow); }
+.phone .scr{ border-radius:19px; background:var(--surface); color:var(--ink); min-height:250px; padding:12px; font-size:12px; overflow:hidden; }
+.phone .bar{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-bottom:8px; }
+.phone h4{ margin:0 0 6px; font-size:14px; }
+.pbtn{ display:block; text-align:center; background:var(--accent); color:#fff; border-radius:10px; padding:7px; font-weight:600; margin-top:8px; }
+:root[data-theme="dark"] .pbtn{ color:#06120D; }
+.pbtn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line-strong); }
+.meter{ height:8px; border-radius:9px; background:var(--sunken); overflow:hidden; margin:4px 0 8px; }
+.meter i{ display:block; height:100%; background:var(--accent); border-radius:9px; }
+.meter.warn i{ background:var(--warn); }
+.scan{ position:relative; height:150px; border-radius:12px; background:#1B2320; margin:4px 0 8px; display:grid; place-items:center; overflow:hidden; }
+.scan:before{ content:""; width:90px; height:90px; border:2px solid #35C596; border-radius:12px; }
+.scan:after{ content:""; position:absolute; left:20%; right:20%; height:2px; background:#35C596; top:20%; animation:sweep 1.4s ease-in-out infinite alternate; box-shadow:0 0 12px #35C596; }
+@keyframes sweep{ to{ top:78% } }
+.stk{ display:flex; gap:8px; justify-content:center; margin:6px 0; }
+.stk img{ width:70px; border-radius:8px; border:1px solid var(--line); background:#fff; }
+.li{ display:flex; justify-content:space-between; gap:6px; padding:5px 0; border-bottom:1px dashed var(--line); }
+
+table{ width:100%; border-collapse:collapse; font-size:12.5px; margin:8px 0; }
+th,td{ text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
+th{ color:var(--muted); font-weight:500; font-size:11.5px; }
+td.n,th.n{ text-align:right; }
+tr.r{ opacity:.3; transition:opacity .3s, background .3s; }
+tr.r.on{ opacity:1; }
+tr.r.flash{ background:var(--accent-soft); }
+tfoot td{ font-weight:600; border-bottom:0; }
+
+.steps{ position:fixed; left:14px; right:398px; bottom:14px; display:flex; gap:6px; padding:6px; align-items:center; overflow-x:auto; }
+.steps::-webkit-scrollbar{ height:0; }
+.st{ flex:1 0 auto; border:1px solid transparent; background:transparent; border-radius:11px; padding:6px 10px; text-align:left; line-height:1.25; }
+.st:hover{ background:var(--sunken); }
+.st[aria-current="true"]{ background:var(--accent-soft); border-color:var(--accent); }
+.st .k{ font-size:10.5px; color:var(--muted); display:block; }
+.st .t{ font-size:13px; font-weight:600; }
+
+dialog{ border:1px solid var(--line); border-radius:18px; background:var(--surface); color:var(--ink); max-width:640px; width:calc(100% - 28px); padding:22px 24px; box-shadow:var(--shadow); }
+dialog::backdrop{ background:rgba(0,0,0,.4); }
+dialog h2{ margin:0 0 4px; }
+dialog h3{ margin:16px 0 4px; font-size:15px; }
+dialog p, dialog li{ color:var(--ink-2); }
+dialog ul{ padding-left:18px; margin:4px 0; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.box{ border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:var(--sunken); }
+.box b{ display:block; margin-bottom:2px; }
+
+@media (max-width:900px){
+  .brand h1{ font-size:14px; }
+  .brand .eyebrow{ display:none; }
+  .panel{ left:8px; right:8px; top:auto; bottom:70px; width:auto; max-height:42vh; padding:14px; }
+  .panel h2{ font-size:18px; }
+  .phone{ display:none; }
+  .steps{ left:8px; right:8px; bottom:8px; }
+  .top{ top:8px; left:8px; right:8px; }
+  .chip{ font-size:11px; padding:4px 8px; }
+  .chip:not(.bag) small{ display:none; }
+  .grid2{ grid-template-columns:1fr; }
+}
+</style>
 </head>
-<body class="app">
-<div class="frame">
+<body>
+<div id="stage"></div>
+<div id="loading">กำลังโหลดโมเดล 3D…</div>
+<div id="tags"><svg id="leaders"></svg></div>
 
-  <!-- Header -->
-  <header class="sticky top-0 z-20 bg-canvas/95 backdrop-blur border-b border-line">
-    <div class="px-5 pt-4 pb-3 flex items-start justify-between gap-3">
-      <div>
-        <div class="disp text-[17px] font-bold leading-tight">Bangkok Waste Lab</div>
-        <div class="text-[12.5px] text-muted leading-tight">จุดทิ้งที่คนใช้จริง · เขตปทุมวัน</div>
-      </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button id="btn-big" aria-pressed="false" title="ตัวหนังสือใหญ่"
-          class="disp w-9 h-9 rounded-lg border border-line bg-surface text-[13px] font-bold text-ink2">ก+</button>
-        <button id="btn-theme" title="สลับสว่าง / มืด"
-          class="w-9 h-9 rounded-lg border border-line bg-surface text-[15px] text-ink2">◐</button>
-      </div>
+<header class="top">
+  <div class="card brand">
+    <div class="logo disp">ฝ</div>
+    <div>
+      <div class="eyebrow">Prototype 3D · plug-in smart lid</div>
+      <h1 class="disp">ฝาถังอัจฉริยะ — จุดทิ้งหน้าบ้าน</h1>
     </div>
-    <div class="px-5 pb-3">
-      <div role="tablist" aria-label="สลับมุมมอง" class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-sunken border border-line">
-        <button role="tab" aria-selected="true" data-role="resident"
-          class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
-          <span class="block leading-tight">ผู้ทิ้ง</span>
-          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Resident</span>
-        </button>
-        <button role="tab" aria-selected="false" data-role="collector"
-          class="role-btn rounded-lg py-2 text-[13px] font-semibold transition-colors">
-          <span class="block leading-tight">ซาเล้ง</span>
-          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Collector</span>
-        </button>
-        <a href="wireframe.html"
-          class="rounded-lg py-2 text-[13px] font-semibold text-center no-underline transition-colors hover:text-ink"
-          style="color:var(--muted)">
-          <span class="block leading-tight">โครงร่าง ↗</span>
-          <span class="block text-[10.5px] font-normal opacity-70 leading-tight">Wireframe</span>
-        </a>
-      </div>
-    </div>
-  </header>
+  </div>
+  <div class="card tools" role="toolbar" aria-label="มุมมอง">
+    <button class="tb" id="t-labels" aria-pressed="true">ป้ายชิ้นส่วน</button>
+    <button class="tb" id="t-explode" aria-pressed="false">แยกชิ้น</button>
+    <button class="tb" id="t-lid" aria-pressed="false">เปิดฝา</button>
+    <button class="tb" id="t-biz">ใครจ่าย?</button>
+    <button class="tb" id="t-theme" aria-label="สลับธีม">◐</button>
+  </div>
+</header>
 
-  <!-- Resident view -->
-  <main id="view-resident" class="px-5 py-5 flex flex-col gap-6">
+<aside class="card panel" id="panel" aria-live="polite"></aside>
 
-    <section id="r-tutorial" class="rounded-2xl border border-line bg-surface shadow-card p-4 flex flex-col gap-3">
-      <div class="flex items-baseline justify-between gap-3">
-        <h2 class="disp text-[15px] font-bold">ใช้ยังไง · 3 ขั้น</h2>
-        <span class="text-[10.5px] text-muted">ครั้งแรกเท่านั้น</span>
-      </div>
-      <ol class="flex flex-col gap-1.5 text-[13px] leading-snug">
-        <li><b class="mono" style="color:var(--accent-ink)">1</b> แยกขวด กระป๋อง ลัง ใส่ถุง</li>
-        <li><b class="mono" style="color:var(--accent-ink)">2</b> เอาไปวางจุดรวมใกล้บ้าน แล้วกด <b>+ เพิ่มขยะของฉัน</b></li>
-        <li><b class="mono" style="color:var(--accent-ink)">3</b> ทั้งจุดครบ 15 กก. ซาเล้งมารับเอง ไม่ต้องรอ</li>
-      </ol>
-      <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
-        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🥤 ✓ ขวด PET</span>
-        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🥫 ✓ กระป๋อง</span>
-        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">📦 ✓ ลัง</span>
-        <span class="rounded-lg py-1.5" style="background:var(--accent-soft);color:var(--accent-ink)">🍾 ✓ ขวดแก้ว</span>
-        <span class="rounded-lg py-1.5" style="background:var(--warn-soft);color:var(--warn)">🧃 ? กล่องนม</span>
-        <span class="rounded-lg py-1.5" style="background:var(--warn-soft);color:var(--warn)">🛍️ ✗ ถุงก๊อบแก๊บ</span>
-      </div>
-      <button id="btn-tut" class="rounded-xl py-2.5 text-[13.5px] font-semibold border"
-        style="border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)">เข้าใจแล้ว</button>
-    </section>
+<nav class="card steps" id="steps" aria-label="ขั้นตอน"></nav>
 
-    <section class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between">
-        <h2 class="eyebrow">จุดรวมใกล้ที่สุด</h2>
-        <span class="text-[11px] text-muted">เดินได้ &lt; 200 ม.</span>
-      </div>
+<dialog id="biz">
+  <div class="row"><span class="who biz">โมเดลธุรกิจ · จากคำแนะนำอาจารย์</span><button class="tb" id="biz-x">ปิด</button></div>
+  <h2 class="disp" style="margin-top:10px">ทำไมต้องฝานี้ และใครจ่าย</h2>
+  <div class="grid2" style="margin-top:12px">
+    <div class="box"><b>Pain</b>คนพร้อมแยกขยะ แต่ไม่อยากขนไปไกล — และ<em>ไม่ได้แคร์เรื่องรายได้</em></div>
+    <div class="box"><b>Solution</b>ย้ายจุด drop มาไว้หน้าบ้านเลย: เสียบฝานี้บนถังเดิม สแกนเปิด ทิ้งถุงที่แยกแล้ว</div>
+    <div class="box"><b>ผู้จ่าย (ลูกค้า)</b>สมาคมซาเล้ง — สมาชิกลงทะเบียนแล้ว ใช้สมาร์ทโฟนได้ — หรือผู้รับซื้อแบบ Wastebuy</div>
+    <div class="box"><b>คุณค่าที่ผู้จ่ายได้</b>รถรับซื้อเสียเวลาคัดแยกหน้างาน → ผู้ใช้แยกใส่ถุงมาแล้ว รถแค่สแกนเปิด ขนทั้งถุงไปแยกที่สถานี</div>
+  </div>
+  <h3>ผลต่อการออกแบบ</h3>
+  <ul>
+    <li>รายได้ไม่ใช่แรงจูงใจหลักของผู้ทิ้ง → ความสะดวกต้องมาก่อน: ไม่ต้องชั่ง ไม่ต้องนัด ไม่ต้องเจอคน</li>
+    <li>ต้องรู้ว่าถุงไหนของใคร (เพื่อเครดิต/ตรวจคุณภาพ) → สติ๊กเกอร์ QR หรือเขียนรหัสบ้านด้วยปากกา</li>
+    <li>QR บนฝาเป็นแบบพิมพ์ — มือถือคือตัวสแกน ฝาไม่ต้องมีกล้อง → ต้นทุนต่ำ</li>
+    <li>ฝาแบบเสียบเพิ่มบนถังเดิม (ถังล้อ 120/240 ลิตร) → ไม่ต้องซื้อถังใหม่</li>
+  </ul>
+  <h3>คำถามที่ยังต้องตอบ</h3>
+  <ul>
+    <li>ต้นทุนฝาต่อชิ้น และใครเป็นเจ้าของ (สมาคมให้ยืม / เช่ารายเดือน / ขาย)?</li>
+    <li>กันขโมย/ทำลายฝาอย่างไร — ยึดกับถังหรือกับรั้วบ้าน?</li>
+    <li>ถุงไม่มีสติ๊กเกอร์ หรือมีเศษอาหารปน — ปฏิเสธ คิดค่าปรับ หรือแค่ไม่ให้เครดิต?</li>
+    <li>ถังหนึ่งใบใช้ร่วมกี่หลัง และใครเก็บกุญแจสำรองเมื่อแบตหมด?</li>
+  </ul>
+</dialog>
 
-      <article class="rounded-2xl bg-surface border border-line shadow-card overflow-hidden">
-        <div class="p-5 flex flex-col gap-4">
-
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h3 class="disp text-[19px] font-bold leading-snug">จุดรวม ซอยจุฬาฯ 12</h3>
-              <p class="text-[12.5px] text-muted leading-snug">ข้างร้านซัก 24 ชม. · เปิด 06:00–22:00</p>
-            </div>
-            <span class="shrink-0 mono text-[11.5px] px-2.5 py-1 rounded-full bg-sunken border border-line text-ink2">140 ม. · เดิน 2 น.</span>
-          </div>
-
-          <div class="flex flex-col gap-2.5">
-            <div class="flex items-end justify-between gap-3">
-              <div class="flex items-baseline gap-1.5">
-                <span id="r-kg" class="mono text-[34px] font-medium leading-none tracking-tight">12.0</span>
-                <span class="mono text-[15px] text-muted leading-none">/ 15 kg</span>
-              </div>
-              <span id="r-pill" class="text-[11.5px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"></span>
-            </div>
-
-            <div class="relative pt-4">
-              <div id="r-marker" class="marker absolute top-0 bottom-0" style="left:75%">
-                <span class="mono text-[9.5px] text-muted whitespace-nowrap absolute top-0 left-0 -translate-x-1/2">15 kg</span>
-                <span class="absolute top-[14px] bottom-0 w-px" style="background:var(--line-strong)"></span>
-              </div>
-              <div class="relative h-3.5 rounded-full bg-sunken border border-line overflow-hidden flex">
-                <div id="seg-pet"  class="seg h-full" style="width:26%;background:var(--mat-pet)"></div>
-                <div id="seg-alu"  class="seg h-full" style="width:8%;background:var(--mat-alu)"></div>
-                <div id="seg-card" class="seg h-full" style="width:26%;background:var(--mat-card)"></div>
-              </div>
-            </div>
-
-            <p id="r-status" class="text-[13px] leading-snug"></p>
-            <p id="r-status-en" class="text-[11.5px] text-muted leading-snug"></p>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2 border-t border-line">
-            <div class="pt-3 flex flex-col gap-1">
-              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-pet)"></i>PET ใส</span>
-              <span id="lg-pet" class="mono text-[13px]">5.2 kg</span>
-            </div>
-            <div class="pt-3 flex flex-col gap-1">
-              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-alu)"></i>อะลูมิเนียม</span>
-              <span id="lg-alu" class="mono text-[13px]">1.6 kg</span>
-            </div>
-            <div class="pt-3 flex flex-col gap-1">
-              <span class="flex items-center gap-1.5 text-[11px] text-muted"><i class="w-2 h-2 rounded-sm" style="background:var(--mat-card)"></i>กระดาษลัง</span>
-              <span id="lg-card" class="mono text-[13px]">5.2 kg</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="px-5 pb-5">
-          <button id="btn-add" class="w-full rounded-xl px-4 py-3 text-left transition-transform active:scale-[.985]"
-            style="background:var(--accent); color:#fff">
-            <span class="flex items-center justify-between gap-3">
-              <span class="disp text-[15px] font-semibold">+ เพิ่มขยะของฉัน (2 kg)</span>
-              <span class="mono text-[11px] opacity-80">Add my waste</span>
-            </span>
-            <span class="block mt-0.5 text-[11px] opacity-85">3 ถุงแยกจากหอ · PET 0.8 · อะลูฯ 0.3 · กระดาษ 0.9</span>
-          </button>
-          <p id="r-mine" class="mt-2 text-[11.5px] text-muted text-center">วันนี้คุณยังไม่ได้เพิ่มขยะเข้าจุดนี้</p>
-          <button id="btn-share" class="hidden mx-auto mt-1.5 block text-[12px] font-semibold px-3 py-1.5 rounded-full border border-line bg-sunken text-ink2">📤 แชร์ให้เพื่อน</button>
-        </div>
-
-        <div id="r-badge" class="hidden mx-5 mb-5 rounded-xl px-4 py-3" style="background:var(--accent-soft)">
-          <p class="disp text-[14px] font-semibold" style="color:var(--accent-ink)">🎉 ครบเกณฑ์แล้ว! แจ้งซาเล้งในพื้นที่เรียบร้อย</p>
-          <p class="text-[11.5px] mt-0.5" style="color:var(--accent-ink);opacity:.85">Threshold met! Local Saleng notified.</p>
-        </div>
-        <div id="r-enroute" class="hidden mx-5 mb-5 rounded-xl px-4 py-3 border border-line bg-sunken flex-col gap-3">
-          <div>
-            <p class="text-[13.5px] font-semibold">🛺 ซาเล้งรับงานแล้ว · ถึงจุดใน <span id="r-eta" class="mono">7</span> นาที</p>
-            <p class="text-[11.5px] text-muted mt-0.5">Saleng en route — ยกถุงไปวางได้เลย ไม่ต้องเฝ้าที่จุด</p>
-          </div>
-          <div class="flex items-center gap-3 rounded-lg bg-surface border border-line px-3 py-2.5">
-            <span class="w-11 h-11 rounded-full grid place-items-center text-[20px] shrink-0" style="background:var(--accent-soft)">🧑🏽</span>
-            <span class="min-w-0">
-              <span class="block text-[13.5px] font-semibold">พี่สมชาย ใจดี</span>
-              <span class="block text-[11.5px] text-ink2">สามล้อเครื่อง · <span class="mono">3กข 1234 กทม.</span></span>
-              <span class="block text-[11px] font-semibold" style="color:var(--accent-ink)">✓ ยืนยันตัวตน · สมาคมซาเล้งฯ</span>
-            </span>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <button data-call="app" class="rounded-lg py-2.5 text-[13px] font-semibold" style="background:var(--accent);color:#fff">📞 โทรผ่านแอป</button>
-            <button data-call="phone" class="rounded-lg py-2.5 text-[13px] font-semibold border border-line bg-surface text-ink2">📱 เบอร์มือถือ</button>
-          </div>
-          <p id="r-callnote" class="hidden text-[11.5px] text-muted text-center"></p>
-        </div>
-      </article>
-    </section>
-
-    <section class="flex flex-col gap-3">
-      <h2 class="eyebrow">จุดอื่นที่เดินไหว</h2>
-      <ul id="r-others" class="flex flex-col gap-2"></ul>
-    </section>
-
-    <section class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between gap-3">
-        <h2 class="eyebrow">ราคารับซื้อวันนี้</h2>
-        <span class="text-[11px] text-muted">อัปเดต 4 ก.ย. 2569</span>
-      </div>
-      <div class="rounded-2xl bg-surface border border-line shadow-card overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-[13px]">
-            <thead>
-              <tr class="text-left" style="background:var(--sunken)">
-                <th class="font-semibold px-4 py-2.5 text-[11px] tracking-wide uppercase text-muted">วัสดุ</th>
-                <th class="font-semibold px-3 py-2.5 text-[11px] tracking-wide uppercase text-muted text-right">บาท / กก.</th>
-                <th class="font-semibold px-4 py-2.5 text-[11px] tracking-wide uppercase text-muted text-right">7 วัน</th>
-              </tr>
-            </thead>
-            <tbody id="price-body"></tbody>
-          </table>
-        </div>
-        <div class="px-4 py-3 border-t border-line flex items-center justify-between gap-3" style="background:var(--sunken)">
-          <div>
-            <p class="text-[11.5px] text-muted leading-tight">ขยะที่คุณเพิ่มวันนี้</p>
-            <p id="r-myvalue" class="mono text-[14px] font-medium leading-tight">0.0 kg ≈ ฿0</p>
-          </div>
-          <p class="text-[10.5px] text-muted text-right max-w-[190px] leading-snug">ใช้เทียบว่าซาเล้งให้ราคายุติธรรมไหม อ้างอิงร้านของเก่าย่านสามย่าน</p>
-        </div>
-      </div>
-    </section>
-
-    <p class="text-[11px] text-muted leading-relaxed pb-2">
-      ทำไมต้องรวมกัน: ขยะจากห้องเดียวน้อยเกินกว่าที่ซาเล้งจะคุ้มค่าน้ำมันมารับ การรวมกันที่จุดเดินถึงทำให้ปริมาณแตะเกณฑ์เรียกรถได้จริง
-    </p>
-  </main>
-
-  <!-- Collector view -->
-  <main id="view-collector" class="hidden px-5 py-5 flex-col gap-6">
-
-    <section class="grid grid-cols-3 gap-2">
-      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
-        <span class="text-[10.5px] text-muted leading-tight">งานพร้อมเก็บ</span>
-        <span id="c-jobs" class="mono text-[20px] font-medium leading-none">2</span>
-      </div>
-      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
-        <span class="text-[10.5px] text-muted leading-tight">น้ำหนักรวม</span>
-        <span id="c-kg" class="mono text-[20px] font-medium leading-none">40.2</span>
-      </div>
-      <div class="rounded-xl bg-surface border border-line p-3 flex flex-col gap-1">
-        <span class="text-[10.5px] text-muted leading-tight">ประเมินได้</span>
-        <span id="c-baht" class="mono text-[20px] font-medium leading-none" style="color:var(--accent-ink)">฿470</span>
-      </div>
-    </section>
-
-    <section class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between gap-3">
-        <h2 class="eyebrow">คิวงานคุ้มค่า</h2>
-        <span class="text-[11px] text-muted">เรียงตามมูลค่า · รัศมี 3 กม.</span>
-      </div>
-      <ul id="c-feed" class="flex flex-col gap-3"></ul>
-    </section>
-
-    <section class="flex flex-col gap-3">
-      <h2 class="eyebrow">ยังไม่ถึงเกณฑ์ · รอปริมาณ</h2>
-      <ul id="c-waiting" class="flex flex-col gap-2"></ul>
-      <p class="text-[11px] text-muted leading-relaxed pb-2">
-        ระบบจะแจ้งเตือนอัตโนมัติเมื่อจุดใดแตะ 15 กก. ตัวเลขรายได้เป็นราคากลางก่อนหักค่าน้ำมันประมาณ ฿30 ต่อเที่ยว
-      </p>
-    </section>
-  </main>
-
-  <!-- Wireframe view (non-functional mock) -->
-</div>
-
-<p class="desknote text-center text-[11.5px] text-muted mt-4">
-  ต้นแบบเชิงโต้ตอบ · สลับมุมมองที่หัวจอ — ขยะที่ผู้ทิ้งเพิ่ม จะไปโผล่ในคิวงานของซาเล้งทันที · ดูโครงร่างทุกหน้าจอได้ที่แท็บ “โครงร่าง”
-</p>
-
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 (function(){
-  var THRESHOLD = 15;
+  'use strict';
+  if(!window.THREE){ document.getElementById('loading').textContent = 'โหลด three.js ไม่ได้ — ต้องต่ออินเทอร์เน็ตครั้งแรก'; return; }
+  var T = THREE;
+  var root = document.documentElement;
 
-  var MATS = {
-    pet:   { th:'ขวด PET ใส',         en:'PET bottles',    price:9.50,  trend:0.40 },
-    alu:   { th:'กระป๋องอะลูมิเนียม', en:'Aluminium cans', price:48.00, trend:-1.50 },
-    card:  { th:'กระดาษลัง',          en:'Cardboard',      price:3.20,  trend:0.15 },
-    glass: { th:'ขวดแก้วใส',          en:'Clear glass',    price:1.20,  trend:0, note:'รับเฉพาะบางจุด' }
+  /* ---------- prefs + theme ---------- */
+  function pref(k, v){ try{ if(v === undefined) return localStorage.getItem('lid-' + k); localStorage.setItem('lid-' + k, v); }catch(e){ return null; } }
+  var dark = pref('theme') ? pref('theme') === 'dark' : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  var SCENE = {
+    light:{ bg:'#E9EDE8', ground:'#C9D0C5', walk:'#BCC4B8', curb:'#A9B2A6', road:'#7D8780', wall:'#F2EFE8', gate:'#5B6660', line:'#F4F4EE' },
+    dark: { bg:'#0B0F0D', ground:'#18201C', walk:'#232C28', curb:'#2E3934', road:'#111614', wall:'#27302C', gate:'#3A4741', line:'#5A645E' }
   };
 
-  var MY_BAGS = { pet:0.8, alu:0.3, card:0.9 };
+  /* ---------- data ---------- */
+  var TYPES = {
+    pet:  { th:'ขวด PET',  color:'#0F9D6B', bag:'#DCEFF4', op:0.78, kg:1.4, price:9.5 },
+    alu:  { th:'กระป๋อง',  color:'#4E96A8', bag:'#A3ACB1', op:1,    kg:1.1, price:48 },
+    card: { th:'กระดาษลัง', color:'#B08A57', box:true,     op:1,    kg:4.0, price:3.2 },
+    glass:{ th:'ขวดแก้ว',  color:'#7C8495', bag:'#5F7D5B', op:1,    kg:6.0, price:1.2 }
+  };
+  var SHARE = 0.6;      // household share of shop value — assumption
+  var CAP = 6;          // bags per bin
+  var HOUSE = '88/12';
 
-  var points = [
-    { id:'p1', name:'จุดรวม ซอยจุฬาฯ 12',       place:'ข้างร้านซัก 24 ชม.',  walkM:140,  driveKm:0.9, mix:{pet:5.2, alu:1.6, card:5.2},  job:null },
-    { id:'p2', name:'จุดรวม หอพักสวนหลวง',       place:'ลานจอดรถ อาคาร B',    walkM:320,  driveKm:1.4, mix:{pet:6.4, alu:2.2, card:7.8},  job:null },
-    { id:'p3', name:'จุดรวม ตลาดสามย่าน ล็อค B', place:'หลังแผงผลไม้',        walkM:850,  driveKm:2.1, mix:{pet:8.1, alu:3.4, card:12.3}, job:null },
-    { id:'p4', name:'จุดรวม ซอยเจริญเมือง 4',    place:'หน้าร้านกาแฟหัวซอย',  walkM:540,  driveKm:1.8, mix:{pet:2.6, alu:0.9, card:4.0},  job:null },
-    { id:'p5', name:'จุดรวม ชุมชนบ้านครัวใต้',   place:'ศาลาริมคลอง',         walkM:1600, driveKm:3.2, mix:{pet:3.1, alu:1.2, card:5.9},  job:null }
+  /* ---------- renderer / scene ---------- */
+  var stage = document.getElementById('stage');
+  var renderer = new T.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+  document.getElementById('loading').hidden = true;
+
+  var scene = new T.Scene();
+  var camera = new T.PerspectiveCamera(34, 1, 0.05, 80);
+  camera.position.set(2.0, 1.8, 2.7);
+  var controls = new T.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.target.set(0, 0.85, 0);
+  controls.minDistance = 0.8; controls.maxDistance = 10;
+  controls.maxPolarAngle = Math.PI * 0.495;
+
+  var hemi = new T.HemisphereLight(0xffffff, 0x445048, 0.75);
+  scene.add(hemi);
+  var sun = new T.DirectionalLight(0xffffff, 1.0);
+  sun.position.set(3, 6, 4);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -5; sun.shadow.camera.right = 5; sun.shadow.camera.top = 5; sun.shadow.camera.bottom = -5;
+  sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02;
+  scene.add(sun);
+
+  function mat(c, o){
+    var m = new T.MeshStandardMaterial({ color:c, roughness:0.62, metalness:0.05 });
+    if(o){ for(var k in o) m[k] = o[k]; }
+    return m;
+  }
+  function box(w, h, d, m, x, y, z){ var b = new T.Mesh(new T.BoxGeometry(w, h, d), m); b.position.set(x || 0, y || 0, z || 0); return b; }
+  function cyl(rt, rb, h, m, seg){ return new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 24), m); }
+  function rrShape(w, h, r){
+    var s = new T.Shape(), x = -w / 2, y = -h / 2;
+    s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+    s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+    s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+    return s;
+  }
+  function rrSlab(w, d, t, r, bv){
+    var g = new T.ExtrudeGeometry(rrShape(w - 2 * bv, d - 2 * bv, r), { depth:t - 2 * bv, bevelEnabled:true, bevelThickness:bv, bevelSize:bv, bevelSegments:3, curveSegments:8 });
+    g.rotateX(-Math.PI / 2); g.center(); return g;
+  }
+  function canvasTex(w, h){
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var tex = new T.CanvasTexture(c); tex.anisotropy = 4;
+    return { c:c, x:c.getContext('2d'), tex:tex };
+  }
+  var FONT = '"IBM Plex Sans Thai","Segoe UI",sans-serif';
+
+  /* fake QR (visual only) */
+  function rng(seed){ seed = seed % 2147483647; if(seed <= 0) seed += 2147483646; return function(){ seed = seed * 16807 % 2147483647; return (seed - 1) / 2147483646; }; }
+  function drawQR(x, ox, oy, s, seed){
+    var n = 25, q = 2, c = s / (n + q * 2), r = rng(seed || 7);
+    x.fillStyle = '#fff'; x.fillRect(ox, oy, s, s);
+    x.fillStyle = '#111';
+    function inF(i, j){ return (i < 8 && j < 8) || (i > n - 9 && j < 8) || (i < 8 && j > n - 9); }
+    for(var i = 0; i < n; i++) for(var j = 0; j < n; j++){
+      if(!inF(i, j) && r() < 0.5) x.fillRect(ox + (i + q) * c, oy + (j + q) * c, Math.ceil(c), Math.ceil(c));
+    }
+    function finder(i, j){
+      var px = ox + (i + q) * c, py = oy + (j + q) * c;
+      x.fillStyle = '#111'; x.fillRect(px, py, 7 * c, 7 * c);
+      x.fillStyle = '#fff'; x.fillRect(px + c, py + c, 5 * c, 5 * c);
+      x.fillStyle = '#111'; x.fillRect(px + 2 * c, py + 2 * c, 3 * c, 3 * c);
+    }
+    finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+  }
+  function rrect(x, X, Y, w, h, r){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+
+  var redraws = [], fontsReady = false;   // canvases to repaint once web fonts are ready
+
+  /* ---------- street ---------- */
+  var envMats = { ground:mat('#ccc'), walk:mat('#ccc'), curb:mat('#ccc'), road:mat('#ccc', { roughness:0.9 }), wall:mat('#ccc'), gate:mat('#ccc', { metalness:0.3 }), line:mat('#fff') };
+  var groundM = new T.Mesh(new T.PlaneGeometry(60, 60), envMats.ground);
+  groundM.rotation.x = -Math.PI / 2; groundM.position.y = -0.005; groundM.receiveShadow = true; scene.add(groundM);
+  var walk = box(9, 0.02, 2.3, envMats.walk, 0, 0.0, 0.1); walk.receiveShadow = true; scene.add(walk);
+  scene.add(box(9, 0.06, 0.12, envMats.curb, 0, 0.02, 1.3));
+  var road = box(30, 0.01, 3.2, envMats.road, 0, -0.002, 2.95); road.receiveShadow = true; scene.add(road);
+  for(var li = -7; li <= 7; li++) scene.add(box(0.9, 0.012, 0.08, envMats.line, li * 2, 0.0, 4.2));
+  var wall = box(9, 1.55, 0.16, envMats.wall, 0, 0.775, -1.1); wall.castShadow = wall.receiveShadow = true; scene.add(wall);
+  var gate = box(1.6, 1.35, 0.04, envMats.gate, -0.15, 0.7, -1.0); scene.add(gate);
+  for(var gi = 0; gi < 9; gi++) scene.add(box(0.025, 1.3, 0.05, envMats.wall, -0.9 + gi * 0.19, 0.7, -0.975));
+  (function(){
+    var p = canvasTex(256, 128);
+    function d(){ var x = p.x; x.fillStyle = '#1D4F8C'; rrect(x, 4, 4, 248, 120, 16); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 4; rrect(x, 12, 12, 232, 104, 10); x.stroke();
+      x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '700 58px ' + FONT; x.fillText(HOUSE, 128, 84); p.tex.needsUpdate = true; }
+    d(); redraws.push(d);
+    var plate = new T.Mesh(new T.PlaneGeometry(0.32, 0.16), new T.MeshStandardMaterial({ map:p.tex, roughness:0.5 }));
+    plate.position.set(0.95, 1.2, -1.015); scene.add(plate);
+  })();
+
+  /* ---------- wheelie bin (existing, generic 240 L) ---------- */
+  var BIN = { w:0.58, d:0.72, h:0.95, y0:0.06 };
+  var TOP = BIN.y0 + BIN.h;
+  var binMat = mat('#2E7A4B', { side:T.DoubleSide, flatShading:true, roughness:0.55 });
+  var bin = new T.Group(); scene.add(bin);
+  (function(){
+    var g = new T.CylinderGeometry(Math.SQRT1_2, Math.SQRT1_2 * 0.84, 1, 4, 1, true);
+    g.rotateY(Math.PI / 4); g.translate(0, 0.5, 0);
+    var body = new T.Mesh(g, binMat); body.scale.set(BIN.w, BIN.h, BIN.d); body.position.y = BIN.y0; bin.add(body);
+    bin.add(box(BIN.w * 0.84, 0.03, BIN.d * 0.84, binMat, 0, BIN.y0 + 0.015, 0));
+    var lip = 0.035, lh = 0.045, y = TOP - lh / 2;
+    bin.add(box(BIN.w + 0.05, lh, lip, binMat, 0, y, BIN.d / 2 + 0.008));
+    bin.add(box(BIN.w + 0.05, lh, lip, binMat, 0, y, -BIN.d / 2 - 0.008));
+    bin.add(box(lip, lh, BIN.d + 0.05, binMat, BIN.w / 2 + 0.008, y, 0));
+    bin.add(box(lip, lh, BIN.d + 0.05, binMat, -BIN.w / 2 - 0.008, y, 0));
+    // handle + wheels at the back
+    var dark = mat('#1F2523', { roughness:0.8 });
+    var h = cyl(0.018, 0.018, BIN.w * 0.86, dark, 12); h.rotation.z = Math.PI / 2; h.position.set(0, TOP - 0.07, -BIN.d / 2 - 0.08); bin.add(h);
+    bin.add(box(0.04, 0.08, 0.09, binMat, BIN.w * 0.4, TOP - 0.07, -BIN.d / 2 - 0.04));
+    bin.add(box(0.04, 0.08, 0.09, binMat, -BIN.w * 0.4, TOP - 0.07, -BIN.d / 2 - 0.04));
+    for(var s = -1; s <= 1; s += 2){
+      var wh = cyl(0.11, 0.11, 0.055, dark, 24); wh.rotation.z = Math.PI / 2; wh.position.set(s * (BIN.w * 0.42 + 0.03), 0.11, -BIN.d * 0.42 + 0.0); bin.add(wh);
+      var hub = cyl(0.04, 0.04, 0.06, mat('#8A938E'), 16); hub.rotation.z = Math.PI / 2; hub.position.copy(wh.position); bin.add(hub);
+    }
+    bin.add(box(BIN.w * 0.7, 0.06, 0.05, binMat, 0, 0.03, BIN.d * 0.36));
+    // embossed front panel
+    bin.add(box(BIN.w * 0.62, BIN.h * 0.45, 0.012, mat('#2A6E44', { flatShading:true }), 0, BIN.y0 + BIN.h * 0.5, BIN.d * 0.455));
+  })();
+
+  // original flat lid (removed during install)
+  var oldLid = new T.Group();
+  var oldLidMat = mat('#2E7A4B', { transparent:true, opacity:1 });
+  (function(){
+    var p = new T.Mesh(rrSlab(BIN.w + 0.07, BIN.d + 0.07, 0.035, 0.04, 0.008), oldLidMat);
+    p.position.set(0, 0.0, (BIN.d + 0.07) / 2); oldLid.add(p);
+    oldLid.position.set(0, TOP + 0.018, -(BIN.d + 0.07) / 2);
+  })();
+  scene.add(oldLid);
+
+  /* ---------- the smart lid module ---------- */
+  var W2 = BIN.w + 0.08, D2 = BIN.d + 0.08;
+  var gfx = mat('#2A302E', { roughness:0.45 });
+  var gfx2 = mat('#3A423F', { roughness:0.5 });
+  var accentM = mat('#0F9D6B');
+  var lid = new T.Group(); lid.position.set(0, TOP, 0); scene.add(lid);
+  var parts = {};      // name -> object, used for callouts and explode
+  function anchor(parent, x, y, z){ var a = new T.Object3D(); a.position.set(x, y, z); parent.add(a); return a; }
+
+  // collar that sits over the bin lip
+  var collar = new T.Group(); lid.add(collar);
+  collar.add(box(W2, 0.06, 0.04, gfx, 0, 0, D2 / 2 - 0.02));
+  collar.add(box(W2, 0.06, 0.04, gfx, 0, 0, -D2 / 2 + 0.02));
+  collar.add(box(0.04, 0.06, D2, gfx, W2 / 2 - 0.02, 0, 0));
+  collar.add(box(0.04, 0.06, D2, gfx, -W2 / 2 + 0.02, 0, 0));
+  collar.add(box(W2 - 0.02, 0.012, 0.012, accentM, 0, -0.03, D2 / 2));
+
+  // universal clamps (2 per side)
+  var clamps = [];
+  [[1, 0.2], [1, -0.2], [-1, 0.2], [-1, -0.2]].forEach(function(c){
+    var pv = new T.Group(); pv.position.set(c[0] * W2 / 2, -0.02, c[1]);
+    pv.add(box(0.016, 0.14, 0.1, gfx2, 0, -0.07, 0));
+    pv.add(box(0.04, 0.02, 0.1, gfx2, -c[0] * 0.02, -0.135, 0));
+    pv.add(box(0.02, 0.03, 0.06, accentM, c[0] * 0.012, -0.03, 0));
+    pv.userData = { side:c[0], base:pv.position.clone() };
+    lid.add(pv); clamps.push(pv);
+  });
+  parts.clamp = anchor(clamps[0], 0.01, -0.08, 0);
+
+  // front plate: printed QR + e-ink status
+  var plate = new T.Group(); plate.position.set(0, -0.055, D2 / 2 + 0.016); lid.add(plate);
+  plate.add(box(0.36, 0.17, 0.03, gfx, 0, 0, 0));
+  var scrT = canvasTex(512, 224);
+  var screen = new T.Mesh(new T.PlaneGeometry(0.33, 0.1444), new T.MeshStandardMaterial({ map:scrT.tex, roughness:0.85, emissive:0xffffff, emissiveMap:scrT.tex, emissiveIntensity:0.18 }));
+  screen.position.z = 0.0155; plate.add(screen);
+  parts.plate = anchor(plate, -0.1, 0, 0.02);
+  parts.screen = anchor(plate, 0.08, 0.03, 0.02);
+
+  // hinge + lift motor
+  var hinge = new T.Group(); hinge.position.set(0, 0.05, -D2 / 2); lid.add(hinge);
+  var hc = cyl(0.022, 0.022, 0.5, gfx2, 16); hc.rotation.z = Math.PI / 2; hinge.add(hc);
+  hinge.add(box(0.09, 0.065, 0.065, gfx, 0.3, 0, -0.01));
+  hinge.add(box(0.09, 0.065, 0.065, gfx, -0.3, 0, -0.01));
+  parts.hinge = anchor(hinge, 0.3, 0.03, -0.03);
+
+  // hinged lid panel
+  var lidPivot = new T.Group(); lidPivot.position.set(0, 0.05, -D2 / 2); lid.add(lidPivot);
+  var panelM = new T.Mesh(rrSlab(W2 + 0.01, D2 + 0.02, 0.045, 0.06, 0.012), gfx);
+  panelM.position.set(0, 0, D2 / 2 + 0.005); lidPivot.add(panelM);
+  // raised grip + brand line
+  lidPivot.add(box(0.22, 0.012, 0.05, gfx2, 0, 0.027, D2 - 0.06));
+
+  var solar = new T.Group(); solar.position.set(0, 0.026, D2 / 2 - 0.07); lidPivot.add(solar);
+  (function(){
+    var s = canvasTex(256, 192), x = s.x;
+    x.fillStyle = '#16264A'; x.fillRect(0, 0, 256, 192);
+    x.strokeStyle = '#6E86B8'; x.lineWidth = 2;
+    for(var i = 1; i < 8; i++){ x.beginPath(); x.moveTo(i * 32, 0); x.lineTo(i * 32, 192); x.stroke(); }
+    for(var j = 1; j < 6; j++){ x.beginPath(); x.moveTo(0, j * 32); x.lineTo(256, j * 32); x.stroke(); }
+    x.strokeStyle = '#C9D3E6'; x.lineWidth = 6; x.strokeRect(3, 3, 250, 186);
+    solar.add(box(0.46, 0.008, 0.34, mat('#C9D3E6', { metalness:0.4 }), 0, 0, 0));
+    var top = new T.Mesh(new T.PlaneGeometry(0.45, 0.33), new T.MeshStandardMaterial({ map:s.tex, roughness:0.25, metalness:0.5 }));
+    top.rotation.x = -Math.PI / 2; top.position.y = 0.0045; solar.add(top);
+  })();
+  solar.userData.base = solar.position.clone();
+  parts.solar = anchor(solar, -0.15, 0.01, 0.05);
+
+  var ledMat = new T.MeshStandardMaterial({ color:0x222222, emissive:0x2F6BFF, emissiveIntensity:1.2, roughness:0.3 });
+  var led = box(0.42, 0.014, 0.012, ledMat, 0, 0.0, D2 + 0.012); lidPivot.add(led);
+  parts.led = anchor(lidPivot, -0.16, 0.0, D2 + 0.02);
+
+  var latch = new T.Group(); latch.position.set(0, -0.035, D2 - 0.035); lidPivot.add(latch);
+  latch.add(box(0.08, 0.045, 0.025, gfx2, 0, 0, 0));
+  latch.add(box(0.03, 0.02, 0.03, mat('#B8C0BC', { metalness:0.7, roughness:0.3 }), 0, -0.03, 0));
+  latch.userData.base = latch.position.clone();
+  parts.latch = anchor(latch, 0.03, -0.02, 0.01);
+
+  var sensor = new T.Group(); sensor.position.set(0, -0.03, D2 / 2); lidPivot.add(sensor);
+  sensor.add(cyl(0.05, 0.05, 0.02, gfx2, 24));
+  [-0.02, 0.02].forEach(function(x){ var e = cyl(0.012, 0.012, 0.012, mat('#B8C0BC', { metalness:0.6 }), 16); e.position.set(x, -0.012, 0); sensor.add(e); });
+  sensor.userData.base = sensor.position.clone();
+  parts.sensor = anchor(sensor, 0, -0.02, 0);
+
+  [plate, hinge].forEach(function(o){ o.userData.base = o.position.clone(); });
+  var lidPivotBase = lidPivot.position.clone();
+
+  /* ---------- screen + sticker drawing ---------- */
+  var screenState = { title:'สแกนเพื่อเปิด', sub:'', fill:0, mode:'locked' };
+  function drawScreen(){
+    var x = scrT.x, s = screenState;
+    if(s.mode === 'off'){ x.fillStyle = '#1A1F1D'; x.fillRect(0, 0, 512, 224); scrT.tex.needsUpdate = true; return; }
+    x.fillStyle = '#E4E6DE'; x.fillRect(0, 0, 512, 224);
+    drawQR(x, 14, 14, 196, 8812);
+    x.fillStyle = '#1B1F1C'; x.font = '600 20px ' + FONT; x.fillText('สแกนเปิดฝา', 30, 222 - 4);
+    var tx = 228;
+    x.font = '700 40px ' + FONT; x.fillText(s.title, tx, 60);
+    x.font = '400 23px ' + FONT; x.fillStyle = '#3A423F'; x.fillText(s.sub, tx, 96);
+    x.font = '500 20px "IBM Plex Mono",monospace'; x.fillText('BKK-8812 · ' + HOUSE, tx, 132);
+    // fill bar
+    x.strokeStyle = '#1B1F1C'; x.lineWidth = 3; rrect(x, tx, 152, 260, 30, 8); x.stroke();
+    x.fillStyle = s.fill >= 0.8 ? '#A8681A' : '#1B1F1C';
+    if(s.fill > 0){ rrect(x, tx + 5, 157, Math.max(12, 250 * Math.min(1, s.fill)), 20, 5); x.fill(); }
+    x.fillStyle = '#1B1F1C'; x.font = '600 18px ' + FONT; x.fillText('เต็ม ' + Math.round(s.fill * 100) + '%', tx, 208);
+    scrT.tex.needsUpdate = true;
+  }
+  redraws.push(drawScreen);
+  var LED = { off:0x000000, locked:0x2F6BFF, open:0x22D07A, full:0xF5A524 };
+  function setStatus(mode, title, sub, fill){
+    screenState.mode = mode; screenState.title = title || ''; screenState.sub = sub || '';
+    if(fill !== undefined) screenState.fill = fill;
+    drawScreen();
+    ledMat.emissive.setHex(LED[mode] !== undefined ? LED[mode] : LED.locked);
+    ledMat.emissiveIntensity = mode === 'off' ? 0 : 1.3;
+  }
+  function lockedStatus(){ var n = binBags.length; setStatus(n / CAP >= 0.8 ? 'full' : 'locked', n / CAP >= 0.8 ? 'เต็มแล้ว' : 'สแกนเพื่อเปิด', n / CAP >= 0.8 ? 'แจ้งรถรับซื้อแล้ว' : n + ' ถุงในถัง', n / CAP); }
+
+  function stickerCanvas(type, owner, mode){
+    var t = TYPES[type];
+    var s = canvasTex(200, 260), x = s.x;
+    function d(){
+      x.clearRect(0, 0, 200, 260);
+      if(mode === 'pen'){
+        x.save(); x.translate(100, 130); x.rotate(-0.12);
+        x.fillStyle = '#111'; x.textAlign = 'center';
+        x.font = 'italic 700 64px "Segoe Print","Comic Sans MS",' + FONT; x.fillText(owner.replace('/', '-'), 0, -6);
+        x.font = '700 40px ' + FONT; x.fillText(t.th, 0, 52);
+        x.restore();
+      } else {
+        x.fillStyle = '#fff'; rrect(x, 2, 2, 196, 256, 18); x.fill();
+        x.fillStyle = t.color; rrect(x, 2, 2, 196, 52, 18); x.fill(); x.fillRect(2, 30, 196, 24);
+        x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '700 30px ' + FONT; x.fillText(t.th, 100, 40);
+        drawQR(x, 30, 60, 140, owner.charCodeAt(0) * 97 + owner.length * 13 + type.length);
+        x.fillStyle = '#111'; x.font = '700 30px ' + FONT; x.fillText('บ้าน ' + owner, 100, 240);
+      }
+      s.tex.needsUpdate = true;
+    }
+    d(); if(!fontsReady) redraws.push(d);
+    return s;
+  }
+
+  /* ---------- bags ---------- */
+  var bagProfile = [[0,0],[0.11,0.005],[0.15,0.05],[0.165,0.15],[0.155,0.24],[0.11,0.29],[0.04,0.318],[0.022,0.332],[0.05,0.36],[0.03,0.382],[0,0.386]];
+  var allBags = [];
+  function makeBag(type, owner, mode){
+    var t = TYPES[type], g = new T.Group(), body;
+    var r = rng(owner.length * 31 + type.charCodeAt(0) * 7 + allBags.length * 101 + 3);
+    if(t.box){
+      var bm = mat('#B4895A', { roughness:0.85 });
+      body = new T.Group();
+      body.add(box(0.32, 0.22, 0.22, bm, 0, 0.11, 0));
+      body.add(box(0.33, 0.012, 0.012, bm, 0, 0.223, 0));
+      var str = mat('#E8E1D0');
+      body.add(box(0.012, 0.226, 0.226, str, -0.125, 0.11, 0));
+      body.add(box(0.012, 0.226, 0.226, str, 0.125, 0.11, 0));
+      g.add(body);
+    } else {
+      var pts = bagProfile.map(function(p){ return new T.Vector2(p[0], p[1]); });
+      var geo = new T.LatheGeometry(pts, 22);
+      var pos = geo.attributes.position, ph = r() * 6, ph2 = r() * 6;
+      for(var i = 0; i < pos.count; i++){
+        var vx = pos.getX(i), vy = pos.getY(i), vz = pos.getZ(i);
+        if(vy > 0.02 && vy < 0.3){
+          var a = Math.atan2(vz, vx), k = 1 + 0.06 * Math.sin(a * 3 + ph) * Math.sin(vy * 18 + ph2) + 0.03 * Math.sin(a * 7 + vy * 30);
+          pos.setX(i, vx * k); pos.setZ(i, vz * k);
+        }
+      }
+      geo.computeVertexNormals();
+      body = new T.Mesh(geo, new T.MeshStandardMaterial({ color:t.bag, roughness:0.35, metalness:0.0, transparent:t.op < 1, opacity:t.op }));
+      g.add(body);
+      if(type === 'pet'){   // a few bottles visible through the clear bag
+        var bt = mat('#7FC3D8', { roughness:0.2 });
+        for(var b = 0; b < 4; b++){ var bo = cyl(0.03, 0.03, 0.17, bt, 10); bo.position.set(-0.06 + b * 0.04, 0.1, (b % 2) * 0.05 - 0.03); bo.rotation.z = (r() - 0.5) * 1.2; g.add(bo); }
+      }
+    }
+    var st = stickerCanvas(type, owner, mode);
+    var sm = new T.Mesh(new T.PlaneGeometry(mode === 'pen' ? 0.15 : 0.075, mode === 'pen' ? 0.15 * 1.3 : 0.0975),
+      new T.MeshStandardMaterial({ map:st.tex, transparent:true, roughness:0.6, emissive:0xffffff, emissiveMap:st.tex, emissiveIntensity:0 }));
+    if(t.box) sm.position.set(0, 0.11, 0.113);
+    else sm.position.set(0, 0.165, 0.185);
+    g.add(sm);
+    g.userData = { type:type, owner:owner, mode:mode, sticker:sm, kg:t.kg * (0.85 + r() * 0.3) };
+    g.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.receiveShadow = true; } });
+    sm.castShadow = false;
+    g.rotation.y = (r() - 0.5) * 0.5; g.scale.setScalar(0.78);
+    scene.add(g); allBags.push(g);
+    return g;
+  }
+  var SLOTS = [[-0.1, 0.09, -0.14], [0.1, 0.09, -0.12], [-0.09, 0.09, 0.13], [0.1, 0.09, 0.14], [0.0, 0.34, -0.06], [0.02, 0.34, 0.13]];
+  function slotPos(i){ var s = SLOTS[i % CAP]; return new T.Vector3(s[0], s[1], s[2]); }
+  var binBags = [];
+
+  /* ---------- truck ---------- */
+  var truck = new T.Group(); scene.add(truck);
+  var TRUCK_Z = 2.3, TRUCK_PARK = -0.2;
+  (function(){
+    var white = mat('#F1F3EF', { roughness:0.4 }), dk = mat('#1F2523', { roughness:0.8 }), glass = mat('#26343A', { roughness:0.1, metalness:0.6 });
+    truck.add(box(2.9, 0.2, 1.36, dk, 0, 0.36, 0));
+    truck.add(box(1.0, 1.0, 1.5, white, -0.92, 0.94, 0));
+    truck.add(box(0.03, 0.42, 1.3, glass, -1.42, 1.15, 0));
+    truck.add(box(0.5, 0.36, 0.02, glass, -0.92, 1.18, 0.755));
+    truck.add(box(0.5, 0.36, 0.02, glass, -0.92, 1.18, -0.755));
+    truck.add(box(1.86, 0.06, 1.5, white, 0.52, 0.49, 0));
+    truck.add(box(0.05, 0.42, 1.5, white, -0.39, 0.73, 0));
+    truck.add(box(0.05, 0.42, 1.5, white, 1.43, 0.73, 0));
+    truck.add(box(1.86, 0.42, 0.05, accentM, 0.52, 0.73, 0.75));
+    truck.add(box(1.86, 0.42, 0.05, accentM, 0.52, 0.73, -0.75));
+    var lg = canvasTex(512, 96);
+    function d(){ var x = lg.x; x.clearRect(0, 0, 512, 96); x.fillStyle = '#fff'; x.font = '700 50px ' + FONT; x.textAlign = 'center'; x.fillText('รถรับซื้อ', 256, 64); lg.tex.needsUpdate = true; }
+    d(); redraws.push(d);
+    var logo = new T.Mesh(new T.PlaneGeometry(1.6, 0.3), new T.MeshStandardMaterial({ map:lg.tex, transparent:true }));
+    logo.position.set(0.52, 0.73, 0.777); truck.add(logo);
+    [[-0.92, 0.68], [-0.92, -0.68], [0.95, 0.68], [0.95, -0.68]].forEach(function(p){
+      var w = cyl(0.27, 0.27, 0.2, dk, 24); w.rotation.x = Math.PI / 2; w.position.set(p[0], 0.27, p[1]); truck.add(w);
+      var h = cyl(0.1, 0.1, 0.21, mat('#9AA39E', { metalness:0.5 }), 16); h.rotation.x = Math.PI / 2; h.position.copy(w.position); truck.add(h);
+    });
+    truck.add(box(0.04, 0.1, 0.25, mat('#FFE9A8', { emissive:0xFFE9A8, emissiveIntensity:0.6 }), -1.43, 0.66, 0.55));
+    truck.add(box(0.04, 0.1, 0.25, mat('#FFE9A8', { emissive:0xFFE9A8, emissiveIntensity:0.6 }), -1.43, 0.66, -0.55));
+  })();
+  var BED = [[0.0, -0.38], [0.0, 0.38], [0.5, -0.38], [0.5, 0.38], [1.0, -0.38], [1.0, 0.38]];
+
+  /* ---------- phone + scan beam ---------- */
+  var phone = new T.Group(); scene.add(phone);
+  var phT = canvasTex(128, 256);
+  function drawPhone(col){
+    var x = phT.x; x.fillStyle = '#121816'; x.fillRect(0, 0, 128, 256);
+    x.strokeStyle = col || '#35C596'; x.lineWidth = 6; rrect(x, 24, 70, 80, 80, 10); x.stroke();
+    x.fillStyle = col || '#35C596'; x.fillRect(30, 108, 68, 4);
+    x.fillStyle = '#fff'; x.font = '600 18px ' + FONT; x.textAlign = 'center'; x.fillText('สแกน QR', 64, 190);
+    phT.tex.needsUpdate = true;
+  }
+  drawPhone(); redraws.push(function(){ drawPhone(); });
+  phone.add(box(0.076, 0.155, 0.009, mat('#0E1211', { metalness:0.4, roughness:0.3 })));
+  var phScreen = new T.Mesh(new T.PlaneGeometry(0.068, 0.142), new T.MeshBasicMaterial({ map:phT.tex }));
+  phScreen.position.z = 0.0048; phone.add(phScreen);
+  var beamMat = new T.MeshBasicMaterial({ color:0x35C596, transparent:true, opacity:0, depthWrite:false });
+  var beam = new T.Mesh(new T.CylinderGeometry(0.004, 0.07, 1, 20, 1, true), beamMat);
+  beam.rotation.x = Math.PI / 2; scene.add(beam);
+  phone.visible = false;
+
+  /* ---------- shadows ---------- */
+  [bin, lid, oldLid, truck, phone].forEach(function(o){ o.traverse(function(m){ if(m.isMesh){ m.castShadow = true; m.receiveShadow = true; } }); });
+
+  /* ---------- tweens ---------- */
+  var tweens = [], GEN = 0;
+  function now(){ return performance.now(); }
+  var ease = {
+    io:function(p){ return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; },
+    out:function(p){ return 1 - Math.pow(1 - p, 3); },
+    inq:function(p){ return p * p; },
+    back:function(p){ var c = 1.9; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); },
+    lin:function(p){ return p; }
+  };
+  function tween(sec, fn, done, e){ tweens.push({ t0:now(), d:Math.max(1, sec * 1000), fn:fn || function(){}, done:done, e:ease[e || 'io'], gen:GEN }); }
+  function wait(sec, done){ tween(sec, null, done, 'lin'); }
+  function seq(list){
+    var i = 0, g = GEN;
+    function next(){ if(g !== GEN || i >= list.length) return; var f = list[i++]; f(next); }
+    next();
+  }
+  function lerp(a, b, p){ return a + (b - a) * p; }
+
+  /* ---------- scene actions ---------- */
+  var state = { lid:0, explode:0, install:1 };
+  function applyLid(){ lidPivot.rotation.x = -state.lid * 1.75; }
+  function applyExplode(){
+    var e = state.explode;
+    lidPivot.position.copy(lidPivotBase).add(new T.Vector3(0, 0.34 * e, 0));
+    solar.position.copy(solar.userData.base).add(new T.Vector3(0, 0.16 * e, 0));
+    sensor.position.copy(sensor.userData.base).add(new T.Vector3(0, -0.14 * e, 0));
+    latch.position.copy(latch.userData.base).add(new T.Vector3(0, -0.08 * e, 0.06 * e));
+    plate.position.copy(plate.userData.base).add(new T.Vector3(0, -0.03 * e, 0.24 * e));
+    hinge.position.copy(hinge.userData.base).add(new T.Vector3(0, 0.12 * e, -0.16 * e));
+    clamps.forEach(function(c){ c.position.copy(c.userData.base).add(new T.Vector3(c.userData.side * 0.14 * e, -0.03 * e, 0)); });
+  }
+  function setClamps(open){ clamps.forEach(function(c){ c.rotation.z = c.userData.side * 0.6 * open; }); }
+  function lidTo(v, sec, done){ var a = state.lid; tween(sec || 0.9, function(p){ state.lid = lerp(a, v, p); applyLid(); }, done, v > a ? 'out' : 'io'); }
+  function explodeTo(v, sec, done){ var a = state.explode; tween(sec || 1.4, function(p){ state.explode = lerp(a, v, p); applyExplode(); }, done); }
+  function camTo(p, t, sec, done){
+    var p0 = camera.position.clone(), t0 = controls.target.clone(), P = new T.Vector3().fromArray(p), Q = new T.Vector3().fromArray(t);
+    var asp = innerWidth / innerHeight, k = asp < 0.8 ? 1.9 : (asp < 1.3 ? 1.35 : 1);   // narrow screens: back the camera off
+    P.sub(Q).multiplyScalar(k).add(Q);
+    tween(sec || 1.4, function(k){ camera.position.lerpVectors(p0, P, k); controls.target.lerpVectors(t0, Q, k); }, done);
+  }
+  function flyArc(obj, to, apex, sec, done, spin){
+    var a = obj.position.clone(), r0 = obj.rotation.y;
+    tween(sec, function(p){
+      obj.position.lerpVectors(a, to, p); obj.position.y += apex * 4 * p * (1 - p);
+      if(spin) obj.rotation.y = r0 + spin * p;
+    }, done, 'io');
+  }
+  function dropIntoBin(bag, done){
+    var i = binBags.length; binBags.push(bag);
+    var above = new T.Vector3(0.02, TOP + 0.5, 0.08);
+    flyArc(bag, above, 0.25, 0.8, function(){
+      var s = slotPos(i), a = bag.position.clone();
+      tween(0.45, function(p){ bag.position.lerpVectors(a, s, p); }, done, 'inq');
+    }, 0.6);
+  }
+  function scanAt(target, from, done){
+    phone.visible = true; phone.position.copy(from); phone.rotation.set(0, 0, 0); drawPhone();
+    var to = target.clone().add(new T.Vector3(0, 0.02, 0.24));
+    var a = phone.position.clone();
+    tween(0.9, function(p){ phone.position.lerpVectors(a, to, p); phone.rotation.z = (1 - p) * 0.4; }, function(){
+      var mid = to.clone().add(target).multiplyScalar(0.5);
+      beam.position.copy(mid); beam.scale.set(1, to.distanceTo(target), 1);
+      tween(0.7, function(p){ beamMat.opacity = Math.sin(p * Math.PI) * 0.45; }, function(){ drawPhone('#7FE2C0'); done(); }, 'lin');
+    }, 'out');
+  }
+  function phoneAway(done){
+    var a = phone.position.clone(), b = a.clone().add(new T.Vector3(0.5, -0.4, 0.6));
+    tween(0.6, function(p){ phone.position.lerpVectors(a, b, p); }, function(){ phone.visible = false; if(done) done(); }, 'io');
+  }
+  function plateWorld(){ var v = new T.Vector3(); screen.getWorldPosition(v); return v; }
+
+  /* ---------- reset scene for a step ---------- */
+  function clearBags(){ allBags.forEach(function(b){ if(b.parent) b.parent.remove(b); }); allBags = []; binBags = []; clearTags(); }
+  function reset(cfg){
+    clearBags();
+    state.lid = 0; applyLid();
+    state.explode = 0; applyExplode();
+    setClamps(0);
+    lid.position.set(0, TOP, 0);
+    oldLid.visible = false; oldLid.rotation.set(0, 0, 0); oldLid.position.set(0, TOP + 0.018, -(BIN.d + 0.07) / 2); oldLidMat.opacity = 1;
+    phone.visible = false; beamMat.opacity = 0;
+    truck.position.set(cfg.truck === 'parked' ? TRUCK_PARK : 9, 0, TRUCK_Z);
+    (cfg.bin || []).forEach(function(s){ var b = makeBag(s[0], s[1], s[2] || 'qr'); b.position.copy(slotPos(binBags.length)); binBags.push(b); });
+    (cfg.bed || []).forEach(function(s, i){ var b = makeBag(s[0], s[1], s[2] || 'qr'); var p = BED[i]; b.position.set(p[0], 0.52, p[1]); truck.add(b); });
+    (cfg.ground || []).forEach(function(s){ var b = makeBag(s[0], s[1], s[2] || 'qr'); b.position.set(s[3], 0.01, s[4]); });
+    lockedStatus();
+    setLabels(!!cfg.labels);
+    syncTools();
+  }
+
+  /* ---------- 3D-anchored HTML tags ---------- */
+  var tagsEl = document.getElementById('tags'), svg = document.getElementById('leaders');
+  var callouts = [], bagTags = [];
+  var CALLOUTS = [
+    { k:'plate',  t:'QR พิมพ์บนฝา', s:'มือถือสแกน → ปลดล็อก', dx:-150, dy:70 },
+    { k:'screen', t:'จอ e-ink', s:'สถานะ + % ความเต็ม', dx:150, dy:60 },
+    { k:'led',    t:'ไฟสถานะ', s:'ฟ้า=ล็อก เขียว=เปิด ส้ม=เต็ม', dx:-170, dy:-6 },
+    { k:'solar',  t:'โซลาร์เซลล์ + แบต', s:'ไม่ต้องเดินสายไฟ', dx:-210, dy:-25 },
+    { k:'latch',  t:'ล็อกไฟฟ้า', s:'โซลินอยด์ใต้ขอบฝา', dx:150, dy:2 },
+    { k:'clamp',  t:'ขาหนีบ universal', s:'ใส่ถังล้อ 120/240 ลิตรเดิมได้', dx:150, dy:40 },
+    { k:'hinge',  t:'บานพับ + มอเตอร์ยก', s:'เปิดเอง ปิดเองเมื่อครบเวลา', dx:130, dy:-80 },
+    { k:'sensor', t:'เซนเซอร์ความเต็ม', s:'อัลตราโซนิก ใต้ฝา', dx:-150, dy:30, only:'open' }
+  ];
+  CALLOUTS.forEach(function(c){
+    var dot = document.createElement('div'); dot.className = 'dot';
+    var chip = document.createElement('div'); chip.className = 'chip'; chip.innerHTML = '<b>' + c.t + '</b><small>' + c.s + '</small>';
+    var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    tagsEl.appendChild(dot); tagsEl.appendChild(chip); svg.appendChild(ln);
+    callouts.push({ c:c, dot:dot, chip:chip, ln:ln });
+  });
+  var labelsOn = true;
+  function setLabels(v){ labelsOn = v; document.getElementById('t-labels').setAttribute('aria-pressed', v); }
+  function addBagTag(bag, html, dy){
+    var chip = document.createElement('div'); chip.className = 'chip bag pop'; chip.innerHTML = html;
+    tagsEl.appendChild(chip); var t = { obj:bag, chip:chip, dy:dy || 0.5 }; bagTags.push(t); return t;
+  }
+  function clearTags(){ bagTags.forEach(function(t){ t.chip.remove(); }); bagTags = []; }
+  var v3 = new T.Vector3();
+  function project(obj, dy){
+    obj.getWorldPosition(v3); v3.y += dy || 0; v3.project(camera);
+    return { x:(v3.x + 1) / 2 * innerWidth, y:(1 - v3.y) / 2 * innerHeight, ok:v3.z < 1 && v3.z > -1 };
+  }
+  function updateTags(){
+    var showOpen = state.lid > 0.5 || state.explode > 0.5;
+    var lidOk = lid.visible && state.install > 0.98, sc = innerWidth < 600 ? 0.5 : 1;
+    callouts.forEach(function(o){
+      var on = labelsOn && lidOk && (!o.c.only || showOpen);
+      var p = on ? project(parts[o.c.k]) : null;
+      if(!p || !p.ok){ o.dot.style.display = o.chip.style.display = 'none'; o.ln.style.display = 'none'; return; }
+      var cx = Math.max(70, Math.min(innerWidth - 70, p.x + o.c.dx * sc)), cy = p.y + o.c.dy * sc;
+      o.dot.style.display = o.chip.style.display = ''; o.ln.style.display = '';
+      o.dot.style.left = p.x + 'px'; o.dot.style.top = p.y + 'px';
+      o.chip.style.left = cx + 'px'; o.chip.style.top = cy + 'px';
+      o.ln.setAttribute('x1', p.x); o.ln.setAttribute('y1', p.y); o.ln.setAttribute('x2', cx); o.ln.setAttribute('y2', cy);
+    });
+    bagTags.forEach(function(t){
+      var p = project(t.obj, t.dy);
+      t.chip.style.display = p.ok ? '' : 'none';
+      t.chip.style.left = p.x + 'px'; t.chip.style.top = p.y + 'px';
+    });
+  }
+
+  /* ---------- steps ---------- */
+  var B0 = [['pet', '88/14'], ['glass', '90/3']];
+  var B5 = [['pet', '88/14'], ['glass', '90/3'], ['pet', '88/12'], ['card', '88/12', 'pen'], ['alu', '90/3']];
+  function fillPct(n){ return Math.round(n / CAP * 100); }
+  function stkImg(type, owner, mode){ return stickerCanvas(type, owner, mode).c.toDataURL(); }
+
+  var STEPS = [
+    { k:'ภาพรวม', t:'ฝาเสียบเพิ่ม', who:'', cam:[[2.05, 1.75, 2.6], [0, 0.88, 0]],
+      cfg:{ bin:B0, labels:true },
+      body:function(){ return '<p class="disp" style="font-size:16px;color:var(--ink)">เปลี่ยน<b>ถังขยะหน้าบ้านที่มีอยู่แล้ว</b>ให้เป็นจุดทิ้งของรีไซเคิล — แค่เสียบฝานี้ลงไป</p>' +
+        '<ul><li>คนแยกขยะใส่ถุงไว้แล้ว <b>ไม่ต้องขนไปไกล</b> — ทิ้งหน้าบ้าน</li><li>สแกน QR บนฝาเพื่อเปิด → ฝาล็อกเองเมื่อปิด กันคนคุ้ย</li>' +
+        '<li>ถุงทุกใบติดสติ๊กเกอร์ QR (หรือเขียนรหัสบ้าน) → รู้ว่าเป็นของใคร</li><li>รถรับซื้อสแกนเปิด ขนทั้งถุงไปคัดที่สถานี</li></ul>' +
+        '<div class="note">ลากเพื่อหมุน · scroll เพื่อซูม · กด <b>แยกชิ้น</b> ด้านบนเพื่อดูข้างใน</div>' +
+        '<div class="note assume">สมมติฐาน: ถัง 1 ใบใช้ร่วม 3–5 หลังในซอย</div>'; },
+      phone:function(){ return '<h4>ถังหน้าบ้าน ' + HOUSE + '</h4><div class="eyebrow">ความเต็ม</div><div class="meter"><i style="width:' + fillPct(2) + '%"></i></div>' +
+        '<div class="li"><span>ถุงในถัง</span><b>2</b></div><div class="li"><span>ของคุณ</span><b>0</b></div><div class="li"><span>รอบรับถัดไป</span><b>เมื่อเต็ม 80%</b></div><span class="pbtn">สแกนเปิดฝา</span>'; },
+      play:function(done){ seq([ function(n){ wait(0.8, n); }, function(n){ explodeTo(1, 1.6, n); }, function(n){ wait(2.4, n); }, function(n){ explodeTo(0, 1.3, n); }, function(){ done(); } ]); }
+    },
+    { k:'1 · ติดตั้ง', t:'เสียบบนถังเดิม', who:'<span class="who biz">สมาคม / เจ้าบ้าน</span>', cam:[[1.7, 1.95, 2.3], [0, 1.05, 0]],
+      cfg:{ bin:[], install:true },
+      body:function(){ return '<h2 class="disp">ถอดฝาเดิม → วางฝาใหม่ → ขาหนีบล็อก</h2>' +
+        '<ul><li>ใช้กับถังล้อมาตรฐาน 120/240 ลิตรที่บ้านมีอยู่ — <b>ไม่ต้องซื้อถังใหม่</b></li><li>ขาหนีบ 4 จุดเกาะใต้ขอบถัง ไม่ต้องเจาะ</li>' +
+        '<li>ไฟจากโซลาร์เซลล์บนฝา → ไม่ต้องเดินสายไฟ</li><li>จับคู่ฝากับบ้าน: สแกน QR ครั้งแรกในแอป</li></ul>' +
+        '<div class="note assume">ต้องทดสอบ: ขอบถังแต่ละยี่ห้อต่างกันแค่ไหน</div>'; },
+      phone:function(){ return '<h4>ติดตั้งฝาใหม่</h4><div class="li"><span>1. ถอดฝาเดิม</span><b>✓</b></div><div class="li"><span>2. วางฝา + หนีบ</span><b>✓</b></div>' +
+        '<div class="li"><span>3. สแกนจับคู่</span><b>…</b></div><span class="pbtn">ผูกกับบ้าน ' + HOUSE + '</span>'; },
+      setup:function(){
+        oldLid.visible = true; setStatus('off'); state.install = 0;
+        lid.position.y = TOP + 0.75; setClamps(1);
+      },
+      play:function(done){
+        var hold = lid.position.y;
+        seq([
+          function(n){ wait(0.6, n); },
+          function(n){ tween(0.8, function(p){ oldLid.rotation.x = -1.4 * p; }, n, 'out'); },
+          function(n){ var z0 = oldLid.position.z; tween(1.0, function(p){ oldLid.position.y = TOP + 0.018 + p * 0.6; oldLid.position.z = z0 - p * 0.5; oldLidMat.opacity = 1 - p; }, function(){ oldLid.visible = false; n(); }); },
+          function(n){ tween(1.4, function(p){ lid.position.y = lerp(hold, TOP, p); }, n, 'out'); },
+          function(n){ tween(0.5, function(p){ setClamps(1 - p); }, n, 'back'); },
+          function(n){ state.install = 1; setStatus('open', 'พร้อมใช้', 'จับคู่กับ ' + HOUSE + ' แล้ว', 0); wait(0.35, n); },
+          function(n){ ledMat.emissiveIntensity = 0; wait(0.2, n); },
+          function(n){ ledMat.emissiveIntensity = 1.3; wait(0.6, n); },
+          function(n){ lockedStatus(); n(); },
+          function(){ done(); }
+        ]);
+      }
+    },
+    { k:'2 · ติดป้าย', t:'ถุงนี้ของใคร', who:'<span class="who">ผู้ทิ้ง</span>', cam:[[1.75, 1.3, 2.3], [0.62, 0.2, 0.42]],
+      cfg:{ bin:B0, ground:[['pet', HOUSE, 'qr', 0.5, 0.62], ['card', HOUSE, 'pen', 0.95, 0.38]] },
+      body:function(){ return '<h2 class="disp">แยกใส่ถุงที่บ้าน แล้วติดป้ายเจ้าของ</h2>' +
+        '<p>ถังใช้ร่วมกันหลายหลัง — ป้ายบอกว่าถุงไหนของใคร เพื่อให้เครดิตถูกบ้าน และย้อนดูได้ถ้าถุงมีของผิดประเภท</p>' +
+        '<ul><li><b>สติ๊กเกอร์ QR</b> — ม้วนละ 50 ดวง ได้ตอนสมัคร สีหัวบอกประเภท</li><li><b>หรือเขียนปากกาเมจิก</b> — รหัสบ้าน + ประเภท สำหรับคนไม่อยากใช้สติ๊กเกอร์</li></ul>' +
+        '<div class="stk"><img alt="สติ๊กเกอร์ PET" src="' + stkImg('pet', HOUSE) + '"><img alt="สติ๊กเกอร์กระป๋อง" src="' + stkImg('alu', HOUSE) + '"><img alt="สติ๊กเกอร์แก้ว" src="' + stkImg('glass', HOUSE) + '"></div>' +
+        '<div class="note">สถานีอ่านลายมือด้วย OCR หรือพนักงานพิมพ์เอง — ช้ากว่า QR แต่ไม่ต้องรอสติ๊กเกอร์</div>'; },
+      phone:function(){ return '<h4>สติ๊กเกอร์ของฉัน</h4><div class="li"><span>เหลือ</span><b>38 ดวง</b></div><div class="li"><span>รหัสเขียนมือ</span><b class="mono">88-12</b></div>' +
+        '<span class="pbtn">ขอม้วนใหม่ (ฟรี)</span><span class="pbtn ghost">พิมพ์เองจาก PDF</span>'; },
+      setup:function(){ allBags.forEach(function(b){ if(b.position.y < 0.05) b.userData.sticker.scale.set(0.001, 0.001, 1); }); },
+      play:function(done){
+        var g = allBags.filter(function(b){ return b.position.y < 0.05; });
+        seq([
+          function(n){ wait(1.0, n); },
+          function(n){ tween(0.5, function(p){ var s = Math.max(0.001, p); g[0].userData.sticker.scale.set(s, s, 1); }, function(){ addBagTag(g[0], '<b>สติ๊กเกอร์ QR</b><small>บ้าน ' + HOUSE + ' · PET</small>', 0.38); n(); }, 'back'); },
+          function(n){ wait(0.7, n); },
+          function(n){ tween(0.9, function(p){ g[1].userData.sticker.scale.set(Math.max(0.001, p), 1, 1); }, function(){ addBagTag(g[1], '<b>เขียนปากกา</b><small>88-12 · ลัง</small>', 0.3); n(); }, 'lin'); },
+          function(){ done(); }
+        ]);
+      }
+    },
+    { k:'3 · สแกนทิ้ง', t:'ทิ้งหน้าบ้าน', who:'<span class="who">ผู้ทิ้ง</span>', cam:[[1.55, 1.85, 3.2], [0.2, 0.75, 0.35]],
+      cfg:{ bin:B0, ground:[['pet', HOUSE, 'qr', 0.5, 0.62], ['card', HOUSE, 'pen', 0.95, 0.38]] },
+      body:function(){ return '<h2 class="disp">สแกน → ฝาเปิด → ใส่ถุง → ปิดเอง</h2>' +
+        '<ul><li>สแกน QR บนหน้าฝาด้วยแอป (หรือ LINE) → ฝาปลดล็อกผ่าน Bluetooth</li><li>ฝายกเปิดเอง ใส่ถุงได้หลายใบ ปิดเองหลัง 20 วิ</li>' +
+        '<li>จอ e-ink อัปเดตจำนวนถุง + % ความเต็ม</li><li>คนที่ไม่ได้ลงทะเบียนเปิดไม่ได้ → ไม่มีคนคุ้ย ไม่มีขยะเปียกปน</li></ul>' +
+        '<div class="note assume">สมมติฐาน: เวลาเปิด 20 วินาที, ปลดล็อกด้วย BLE (ไม่ต้องมีซิมในฝา)</div>'; },
+      phone:function(){ return '<div class="scan"></div><h4>กำลังเปิดฝา ' + HOUSE + '…</h4><div class="li"><span>ถุงในถัง</span><b>2 → 4</b></div><div class="li"><span>ความเต็ม</span><b>' + fillPct(2) + '% → ' + fillPct(4) + '%</b></div>'; },
+      play:function(done){
+        var g = allBags.filter(function(b){ return b.position.y < 0.05; });
+        seq([
+          function(n){ wait(0.8, n); },
+          function(n){ scanAt(plateWorld(), new T.Vector3(0.6, 0.7, 1.1), n); },
+          function(n){ setStatus('open', 'เปิดแล้ว', 'ใส่ถุงได้เลย · 20 วิ', binBags.length / CAP); lidTo(1, 1.0, n); },
+          function(n){ phoneAway(); dropIntoBin(g[0], n); },
+          function(n){ dropIntoBin(g[1], n); },
+          function(n){ wait(0.6, n); },
+          function(n){ lidTo(0, 1.0, n); },
+          function(n){ lockedStatus(); n(); },
+          function(){ done(); }
+        ]);
+      }
+    },
+    { k:'4 · รถรับ', t:'สแกนเปิด ยกทั้งถุง', who:'<span class="who col">รถรับซื้อ</span>', cam:[[3.4, 4.6, 7.0], [0.1, 0.5, 1.2]],
+      cfg:{ bin:B5 },
+      body:function(){ return '<h2 class="disp">เต็ม 80% → แจ้งรถ → สแกนเปิด → ขนไปทั้งถุง</h2>' +
+        '<ul><li>เซนเซอร์บอกความเต็ม → ระบบจัดเส้นทางรถให้แวะเฉพาะถังที่คุ้ม</li><li>คนขับสแกน QR เดียวกัน (สิทธิ์ผู้เก็บ) → ฝาเปิด</li>' +
+        '<li><b>ไม่ต้องคัดหน้างาน</b> — ผู้ใช้แยกมาแล้ว ยกทั้งถุงขึ้นรถ</li><li>ข้อมูลความเต็มส่งต่อผ่านมือถือคนที่มาเปิด/ผ่าน (ไม่ต้องมีซิม)</li></ul>' +
+        '<div class="note">ปัญหาเดิมของรถรับซื้อ: เสียเวลาคัดแยกหน้างานทุกจุด</div>'; },
+      phone:function(){ return '<div class="eyebrow">แอปคนขับ</div><h4>งานใหม่ · ' + HOUSE + '</h4><div class="meter warn"><i style="width:' + fillPct(5) + '%"></i></div>' +
+        '<div class="li"><span>ถุง</span><b>5</b></div><div class="li"><span>ประมาณ</span><b>~14 กก.</b></div><div class="li"><span>ระยะ</span><b>350 ม.</b></div><span class="pbtn">สแกนเปิดฝา</span>'; },
+      play:function(done){
+        var pw;
+        seq([
+          function(n){ wait(0.5, n); },
+          function(n){ tween(2.4, function(p){ truck.position.x = lerp(9, TRUCK_PARK, p); }, n, 'out'); },
+          function(n){ pw = plateWorld(); scanAt(pw, new T.Vector3(0.9, 0.9, 1.5), n); },
+          function(n){ setStatus('open', 'รถมารับ', 'รถรับซื้อ · 10:42', binBags.length / CAP); lidTo(1, 1.0, n); },
+          function(n){
+            phoneAway();
+            var list = binBags.slice().reverse(), left = list.length;
+            list.forEach(function(b, i){
+              wait(i * 0.35, function(){
+                var bp = BED[i]; var to = new T.Vector3(TRUCK_PARK + bp[0], 0.52, TRUCK_Z + bp[1]);
+                flyArc(b, to, 0.9, 1.0, function(){ truck.attach(b); if(--left === 0) n(); }, 1.2);
+              });
+            });
+            binBags = [];
+          },
+          function(n){ setStatus('locked', 'ว่าง', 'รับไป 5 ถุง · 10:43', 0); lidTo(0, 1.0, n); },
+          function(n){ ledMat.emissive.setHex(LED.locked); wait(0.5, n); },
+          function(){ done(); }
+        ]);
+      }
+    },
+    { k:'5 · สถานี', t:'สแกนถุง → เครดิต', who:'<span class="who col">สถานีคัดแยก</span>', cam:[[2.9, 2.8, 5.3], [0.35, 0.6, 2.2]],
+      cfg:{ truck:'parked', bed:B5.slice().reverse() },
+      body:function(){
+        var rows = '', tot = 0;
+        allBags.forEach(function(b, i){
+          var d = b.userData, t = TYPES[d.type], val = d.kg * t.price, cr = val * SHARE; tot += cr;
+          rows += '<tr class="r" id="r' + i + '"><td>' + d.owner + '</td><td>' + t.th + (d.mode === 'pen' ? ' ✎' : '') + '</td><td class="n mono">' + d.kg.toFixed(1) + '</td><td class="n mono">฿' + cr.toFixed(0) + '</td></tr>';
+        });
+        return '<h2 class="disp">ที่สถานี: สแกนป้าย → ชั่ง → เครดิตเข้าบ้าน</h2>' +
+          '<p>คัดแยกย่อยที่สถานีทีเดียว เร็วกว่าคัดทีละจุด ผลชั่งย้อนกลับไปที่เจ้าของถุง</p>' +
+          '<table><thead><tr><th>บ้าน</th><th>ประเภท</th><th class="n">กก.</th><th class="n">เครดิต</th></tr></thead><tbody>' + rows + '</tbody>' +
+          '<tfoot><tr><td colspan="3">รวมเข้าบัญชีผู้ทิ้ง</td><td class="n mono">฿' + tot.toFixed(0) + '</td></tr></tfoot></table>' +
+          '<div class="note assume">สมมติฐาน: ผู้ทิ้งได้ ' + Math.round(SHARE * 100) + '% ของราคาร้านรับซื้อ (PET ฿9.5, กระป๋อง ฿48, ลัง ฿3.2, แก้ว ฿1.2 /กก.) · น้ำหนักต่อถุงเป็นตัวอย่าง</div>' +
+          '<div class="note">ผู้ทิ้งไม่ได้แคร์รายได้ → ค่าเริ่มต้นอาจเป็นแต้ม/บริจาคให้ชุมชน แล้วถอนเป็นเงินได้</div>'; },
+      phone:function(){ return '<div class="eyebrow">แจ้งเตือนถึง ' + HOUSE + '</div><h4>ถุงของคุณถูกชั่งแล้ว</h4><div class="li"><span>PET</span><b>✓</b></div><div class="li"><span>ลัง (เขียนมือ)</span><b>✓</b></div>' +
+        '<div class="li"><span>เครดิต</span><b>+฿' + allBags.filter(function(b){ return b.userData.owner === HOUSE; }).reduce(function(s, b){ return s + b.userData.kg * TYPES[b.userData.type].price * SHARE; }, 0).toFixed(0) + '</b></div><span class="pbtn ghost">บริจาคให้ชุมชน</span>'; },
+      play:function(done){
+        var list = allBags.slice();
+        seq([ function(n){ wait(1.0, n); } ].concat(list.map(function(b, i){
+          return function(n){
+            var d = b.userData, t = TYPES[d.type], sm = d.sticker;
+            tween(0.5, function(p){ var k = Math.sin(p * Math.PI); b.scale.setScalar(0.78 * (1 + 0.12 * k)); sm.material.emissiveIntensity = 0.8 * k; }, null, 'lin');
+            addBagTag(b, '<b>' + d.owner + '</b> · ' + t.th + '<small>' + d.kg.toFixed(1) + ' กก. · +฿' + (d.kg * t.price * SHARE).toFixed(0) + '</small>', 0.55);
+            var r = document.getElementById('r' + i);
+            if(r){ r.className = 'r on flash'; setTimeout(function(){ r.className = 'r on'; }, 700); }
+            wait(0.75, n);
+          };
+        })).concat([ function(){ done(); } ]));
+      }
+    }
   ];
 
-  var home = points[0];
-  var mine = { count:0 };
+  /* ---------- UI ---------- */
+  var panel = document.getElementById('panel'), stepsEl = document.getElementById('steps');
+  var cur = 0, auto = false;
+  var playBtn = document.createElement('button'); playBtn.className = 'tb primary'; playBtn.style.flex = '0 0 auto';
+  stepsEl.appendChild(playBtn);
+  var stepBtns = STEPS.map(function(s, i){
+    var b = document.createElement('button'); b.className = 'st';
+    b.innerHTML = '<span class="k">' + s.k + '</span><span class="t">' + s.t + '</span>';
+    b.onclick = function(){ go(i, false); };
+    stepsEl.appendChild(b); return b;
+  });
+  function syncPlay(){ playBtn.textContent = auto ? '■ หยุด' : '▶ เล่นทั้งหมด'; }
+  playBtn.onclick = function(){ if(auto){ auto = false; syncPlay(); } else go(1, true); };
 
-  function kgOf(p){ return Math.round((p.mix.pet + p.mix.alu + p.mix.card) * 10) / 10; }
-  function bahtOf(p){ return p.mix.pet*MATS.pet.price + p.mix.alu*MATS.alu.price + p.mix.card*MATS.card.price; }
-  function round5(n){ return Math.round(n/5)*5; }
-  function etaOf(p){ return Math.round(p.driveKm*4 + 3); }
-  function distLabel(m){ return m >= 1000 ? (m/1000).toFixed(1)+' กม.' : m+' ม.'; }
-  function isReady(p){ return kgOf(p) >= THRESHOLD; }
+  function go(i, isAuto){
+    GEN++; tweens = []; auto = !!isAuto; cur = i; syncPlay();
+    var s = STEPS[i];
+    state.install = 1; lid.visible = true;
+    reset(s.cfg);
+    if(s.setup) s.setup();
+    stepBtns.forEach(function(b, j){ b.setAttribute('aria-current', j === i); });
+    panel.innerHTML = '<div class="row"><span class="eyebrow">' + (i === 0 ? 'ภาพรวม' : 'ขั้นที่ ' + i + ' / ' + (STEPS.length - 1)) + '</span>' + s.who + '</div>' +
+      (i === 0 ? '<h2 class="disp">ฝาถังอัจฉริยะแบบเสียบเพิ่ม</h2>' : '') + s.body() +
+      '<div class="phone"><div class="scr"><div class="bar"><span>9:41</span><span>●●● 4G</span></div>' + s.phone() + '</div></div>' +
+      '<div class="row" style="margin-top:10px"><button class="tb" id="replay">↻ เล่นซ้ำ</button>' +
+      (i < STEPS.length - 1 ? '<button class="tb primary" id="next">ถัดไป →</button>' : '<button class="tb primary" id="next">เริ่มใหม่</button>') + '</div>';
+    panel.scrollTop = 0;
+    document.getElementById('replay').onclick = function(){ go(cur, false); };
+    document.getElementById('next').onclick = function(){ go((cur + 1) % STEPS.length, false); };
+    stepBtns[i].scrollIntoView({ block:'nearest', inline:'nearest' });
+    try{ history.replaceState(null, '', '#' + i); }catch(e){}
+    layout();
+    var g = GEN;
+    camTo(s.cam[0], s.cam[1], 1.3);
+    wait(0.4, function(){ s.play(function(){
+      syncTools();
+      if(g === GEN && auto){ if(i < STEPS.length - 1) wait(1.8, function(){ go(i + 1, true); }); else { auto = false; syncPlay(); } }
+    }); });
+  }
 
-  var views = {
-    resident:  document.getElementById('view-resident'),
-    collector: document.getElementById('view-collector')
+  // toolbar
+  var tLabels = document.getElementById('t-labels'), tExplode = document.getElementById('t-explode'), tLid = document.getElementById('t-lid');
+  function syncTools(){
+    tExplode.setAttribute('aria-pressed', state.explode > 0.5);
+    tLid.setAttribute('aria-pressed', state.lid > 0.5);
+    tLid.textContent = state.lid > 0.5 ? 'ปิดฝา' : 'เปิดฝา';
+  }
+  function interrupt(){ if(auto){ auto = false; syncPlay(); } }
+  tLabels.onclick = function(){ setLabels(!labelsOn); };
+  tExplode.onclick = function(){ interrupt(); var v = state.explode > 0.5 ? 0 : 1; if(v) setLabels(true); explodeTo(v, 1.2, syncTools); tExplode.setAttribute('aria-pressed', !!v); };
+  tLid.onclick = function(){
+    interrupt(); var open = state.lid < 0.5;
+    if(open) setStatus('open', 'เปิดแล้ว', 'ใส่ถุงได้เลย', binBags.length / CAP); else lockedStatus();
+    lidTo(open ? 1 : 0, 0.9, syncTools); tLid.setAttribute('aria-pressed', open); tLid.textContent = open ? 'ปิดฝา' : 'เปิดฝา';
   };
-  var frame = document.querySelector('.frame');
-  var role = 'resident';
+  var biz = document.getElementById('biz');
+  document.getElementById('t-biz').onclick = function(){ if(biz.showModal) biz.showModal(); else biz.setAttribute('open', ''); };
+  document.getElementById('biz-x').onclick = function(){ if(biz.close) biz.close(); else biz.removeAttribute('open'); };
+  biz.addEventListener('click', function(e){ if(e.target === biz && biz.close) biz.close(); });
 
-  function setRole(next){
-    role = next;
-    Object.keys(views).forEach(function(key){
-      var on = key === next;
-      views[key].classList.toggle('hidden', !on);
-      views[key].classList.toggle('flex', on);
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.role-btn'), function(btn){
-      var on = btn.dataset.role === next;
-      btn.setAttribute('aria-selected', on ? 'true' : 'false');
-      btn.style.background = on ? 'var(--surface)' : 'transparent';
-      btn.style.color      = on ? 'var(--ink)' : 'var(--muted)';
-      btn.style.boxShadow  = on ? 'var(--shadow)' : 'none';
-    });
-    frame.scrollTop = 0;
-    render();
+  function applyTheme(){
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    var c = SCENE[dark ? 'dark' : 'light'];
+    scene.background = new T.Color(c.bg);
+    scene.fog = new T.Fog(c.bg, 9, 22);
+    for(var k in envMats) if(c[k]) envMats[k].color.set(c[k]);
+    hemi.intensity = dark ? 0.45 : 0.75; sun.intensity = dark ? 0.75 : 1.0;
   }
-  Array.prototype.forEach.call(document.querySelectorAll('.role-btn'), function(b){
-    b.addEventListener('click', function(){ setRole(b.dataset.role); });
-  });
+  document.getElementById('t-theme').onclick = function(){ dark = !dark; pref('theme', dark ? 'dark' : 'light'); applyTheme(); };
 
-  function renderResident(){
-    var kg = kgOf(home);
-    var max = Math.max(20, Math.ceil(kg/5)*5);
-    var met = kg >= THRESHOLD;
+  /* ---------- layout + loop ---------- */
+  function layout(){
+    var W = innerWidth, H = innerHeight;
+    renderer.setSize(W, H); camera.aspect = W / H;
+    var desk = W > 900;
+    var ox = desk ? 195 : 0;
+    var oy = desk ? 0 : Math.round(Math.min(panel.offsetHeight, H * 0.42) / 2) - 10;
+    camera.setViewOffset(W, H, ox, oy, W, H);
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', layout);
 
-    document.getElementById('r-kg').textContent = kg.toFixed(1);
-    document.getElementById('seg-pet').style.width  = (home.mix.pet/max*100)  + '%';
-    document.getElementById('seg-alu').style.width  = (home.mix.alu/max*100)  + '%';
-    document.getElementById('seg-card').style.width = (home.mix.card/max*100) + '%';
-    document.getElementById('r-marker').style.left  = (THRESHOLD/max*100) + '%';
-
-    document.getElementById('lg-pet').textContent  = home.mix.pet.toFixed(1)  + ' kg';
-    document.getElementById('lg-alu').textContent  = home.mix.alu.toFixed(1)  + ' kg';
-    document.getElementById('lg-card').textContent = home.mix.card.toFixed(1) + ' kg';
-
-    var pill = document.getElementById('r-pill');
-    if (met){
-      pill.textContent = 'พร้อมให้ซาเล้งมารับ';
-      pill.style.background = 'var(--accent-soft)';
-      pill.style.color = 'var(--accent-ink)';
-    } else {
-      pill.textContent = 'กำลังสะสม';
-      pill.style.background = 'var(--warn-soft)';
-      pill.style.color = 'var(--warn)';
+  function loop(){
+    requestAnimationFrame(loop);
+    var t = now();
+    for(var i = 0; i < tweens.length; i++){
+      var tw = tweens[i];
+      if(tw.gen !== GEN){ tweens.splice(i--, 1); continue; }
+      var p = Math.min(1, (t - tw.t0) / tw.d);
+      tw.fn(tw.e(p));
+      if(p >= 1){ tweens.splice(i--, 1); if(tw.done) tw.done(); }
     }
-
-    var short = Math.round((THRESHOLD - kg) * 10) / 10;
-    var status = document.getElementById('r-status');
-    var statusEn = document.getElementById('r-status-en');
-    if (short > 0){
-      status.innerHTML = 'ขาดอีก <b class="mono">' + short.toFixed(1) + ' kg</b> ก่อนระบบจะเรียกซาเล้งเข้ามาเก็บ';
-      status.style.color = 'var(--ink)';
-      statusEn.textContent = short.toFixed(1) + ' kg needed until a Saleng pickup is triggered.';
-    } else {
-      var over = Math.round((kg - THRESHOLD) * 10) / 10;
-      status.innerHTML = 'ถึงเกณฑ์เรียกรถแล้ว เกินมา <b class="mono">' + over.toFixed(1) + ' kg</b> · ทิ้งเพิ่มได้ถึง 22:00 น.';
-      status.style.color = 'var(--accent-ink)';
-      statusEn.textContent = 'Pickup threshold reached — the point stays open for more drop-offs.';
-    }
-
-    document.getElementById('r-badge').classList.toggle('hidden', !met);
-
-    var enroute = document.getElementById('r-enroute');
-    enroute.classList.toggle('hidden', home.job !== 'enroute');
-    enroute.classList.toggle('flex', home.job === 'enroute');
-    if (home.job === 'enroute') document.getElementById('r-eta').textContent = etaOf(home);
-    document.getElementById('btn-share').classList.toggle('hidden', mine.count === 0);
-
-    var mineEl = document.getElementById('r-mine');
-    if (mine.count === 0){
-      mineEl.textContent = 'วันนี้คุณยังไม่ได้เพิ่มขยะเข้าจุดนี้';
-    } else {
-      mineEl.innerHTML = 'คุณเพิ่มแล้ว <b class="mono">' + (mine.count*2).toFixed(1) + ' kg</b> วันนี้ · คิดเป็น ' +
-        Math.round(mine.count*2 / kg * 100) + '% ของกองนี้';
-    }
-
-    var myKg = mine.count * 2;
-    var myBaht = mine.count * (MY_BAGS.pet*MATS.pet.price + MY_BAGS.alu*MATS.alu.price + MY_BAGS.card*MATS.card.price);
-    document.getElementById('r-myvalue').textContent = myKg.toFixed(1) + ' kg ≈ ฿' + myBaht.toFixed(0);
-
-    document.getElementById('r-others').innerHTML = points.filter(function(p){
-      return p.id !== home.id && p.walkM <= 900;
-    }).sort(function(a,b){ return a.walkM - b.walkM; }).map(function(p){
-      var k = kgOf(p), pct = Math.min(100, k/THRESHOLD*100), ok = k >= THRESHOLD;
-      return '<li class="rounded-xl bg-surface border border-line px-4 py-3 flex items-center gap-3">' +
-        '<div class="flex-1 min-w-0">' +
-          '<p class="text-[13.5px] font-medium truncate">' + p.name + '</p>' +
-          '<p class="text-[11px] text-muted">' + distLabel(p.walkM) + ' · เดิน ' + Math.round(p.walkM/70) + ' น.</p>' +
-        '</div>' +
-        '<div class="w-20 shrink-0">' +
-          '<div class="h-1.5 rounded-full bg-sunken border border-line overflow-hidden">' +
-            '<div style="width:' + pct + '%;height:100%;background:' + (ok ? 'var(--accent)' : 'var(--warn)') + '"></div>' +
-          '</div>' +
-          '<p class="mono text-[10.5px] mt-1 text-right" style="color:' + (ok ? 'var(--accent-ink)' : 'var(--muted)') + '">' +
-            k.toFixed(1) + ' / 15 kg</p>' +
-        '</div>' +
-      '</li>';
-    }).join('');
+    controls.update();
+    renderer.render(scene, camera);
+    updateTags();
   }
 
-  function renderPrices(){
-    document.getElementById('price-body').innerHTML = Object.keys(MATS).map(function(k, i){
-      var m = MATS[k];
-      var flat = m.trend === 0, up = m.trend > 0;
-      var col = flat ? 'var(--muted)' : (up ? 'var(--accent-ink)' : 'var(--warn)');
-      var sign = flat ? '±0.00' : (up ? '▲ +' : '▼ −') + Math.abs(m.trend).toFixed(2);
-      return '<tr' + (i ? ' class="border-t border-line"' : '') + '>' +
-        '<td class="px-4 py-3">' +
-          '<span class="flex items-center gap-2">' +
-            '<i class="w-2 h-2 rounded-sm shrink-0" style="background:var(--mat-' + k + ')"></i>' +
-            '<span><span class="block leading-tight">' + m.th + '</span>' +
-            '<span class="block text-[10.5px] text-muted leading-tight">' + m.en + (m.note ? ' · ' + m.note : '') + '</span></span>' +
-          '</span>' +
-        '</td>' +
-        '<td class="px-3 py-3 mono text-right">' + m.price.toFixed(2) + '</td>' +
-        '<td class="px-4 py-3 mono text-[11.5px] text-right" style="color:' + col + '">' + sign + '</td>' +
-      '</tr>';
-    }).join('');
-  }
-
-  function jobCard(p){
-    var kg = kgOf(p), val = bahtOf(p);
-    var lo = round5(val*0.86), hi = round5(val*1.06);
-    var enroute = p.job === 'enroute';
-    var fresh = p.id === home.id && mine.count > 0;
-
-    var chips = [['pet','PET'],['alu','อะลูฯ'],['card','กระดาษ']].map(function(pair){
-      return '<span class="mono text-[10.5px] px-2 py-0.5 rounded-md border border-line bg-sunken">' +
-        '<i class="inline-block w-1.5 h-1.5 rounded-sm mr-1 align-middle" style="background:var(--mat-' + pair[0] + ')"></i>' +
-        pair[1] + ' ' + p.mix[pair[0]].toFixed(1) + '</span>';
-    }).join('');
-
-    var action = enroute
-      ? '<div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3" style="background:var(--accent-soft)">' +
-          '<span class="text-[13px] font-semibold" style="color:var(--accent-ink)">' +
-            '<i class="pulse-dot inline-block w-2 h-2 rounded-full mr-1.5 align-middle" style="background:var(--accent)"></i>' +
-            'กำลังไป · En Route · ถึงใน ' + etaOf(p) + ' นาที</span>' +
-          '<button data-act="cancel" data-id="' + p.id + '" class="text-[11.5px] underline underline-offset-2 shrink-0" style="color:var(--accent-ink)">ยกเลิก</button>' +
-        '</div>'
-      : '<div class="grid grid-cols-[auto_1fr] gap-2">' +
-          '<button data-act="speak" data-id="' + p.id + '" class="rounded-xl px-4 py-3 text-[14px] font-semibold border border-line bg-sunken text-ink2" title="อ่านงานนี้ให้ฟัง">🔊 ฟัง</button>' +
-          '<button data-act="accept" data-id="' + p.id + '" class="rounded-xl py-3 text-[14px] font-semibold transition-transform active:scale-[.985]" ' +
-            'style="background:var(--accent);color:#fff">รับงาน · Accept</button>' +
-        '</div>';
-
-    return '<li class="rise rounded-2xl bg-surface shadow-card overflow-hidden border" style="border-color:' +
-        (enroute ? 'var(--accent)' : 'var(--line)') + '">' +
-      '<div class="p-4 flex flex-col gap-3">' +
-        '<div class="flex items-start justify-between gap-3">' +
-          '<div class="min-w-0">' +
-            '<h3 class="disp text-[16px] font-bold leading-snug">' + p.name + '</h3>' +
-            '<p class="text-[11.5px] text-muted leading-snug">' + p.place + ' · ขับ ' + p.driveKm.toFixed(1) + ' กม. · ' + etaOf(p) + ' นาที</p>' +
-          '</div>' +
-          '<span class="shrink-0 text-[10.5px] font-semibold px-2 py-1 rounded-full whitespace-nowrap" ' +
-            'style="background:var(--accent-soft);color:var(--accent-ink)">คุ้มค่าเที่ยว &gt;15 kg</span>' +
-        '</div>' +
-        (fresh ? '<p class="text-[11px] rounded-lg px-2.5 py-1.5" style="background:var(--warn-soft);color:var(--warn)">อัปเดตใหม่ · มีคนทิ้งเพิ่มที่จุดนี้เมื่อสักครู่</p>' : '') +
-        '<div class="flex items-end justify-between gap-3">' +
-          '<div>' +
-            '<p class="text-[10.5px] text-muted leading-tight">ปริมาณสะสม</p>' +
-            '<p class="mono text-[24px] font-medium leading-none">' + kg.toFixed(1) + ' <span class="text-[13px] text-muted">kg</span></p>' +
-          '</div>' +
-          '<div class="text-right">' +
-            '<p class="text-[10.5px] text-muted leading-tight">ประเมินรายได้</p>' +
-            '<p class="mono text-[18px] font-medium leading-tight" style="color:var(--accent-ink)">฿' + lo + '–' + hi + '</p>' +
-          '</div>' +
-        '</div>' +
-        '<div class="flex flex-wrap gap-1.5">' + chips +
-          '<span class="text-[10.5px] font-semibold px-2 py-0.5 rounded-md" style="background:var(--accent-soft);color:var(--accent-ink)">✓ แยกมาแล้ว</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="px-4 pb-4">' + action + '</div>' +
-    '</li>';
-  }
-
-  function waitingRow(p){
-    var kg = kgOf(p), short = (THRESHOLD - kg).toFixed(1);
-    return '<li class="rounded-xl border border-line px-4 py-3 flex items-center justify-between gap-3" style="background:var(--sunken)">' +
-      '<div class="min-w-0">' +
-        '<p class="text-[13px] font-medium truncate">' + p.name + '</p>' +
-        '<p class="text-[11px] text-muted">ขับ ' + p.driveKm.toFixed(1) + ' กม. · ขาดอีก ' + short + ' kg</p>' +
-      '</div>' +
-      '<span class="mono text-[12px] shrink-0 text-muted">' + kg.toFixed(1) + ' / 15</span>' +
-    '</li>';
-  }
-
-  function renderCollector(){
-    var jobs = points.filter(isReady).sort(function(a,b){
-      if ((a.job === 'enroute') !== (b.job === 'enroute')) return a.job === 'enroute' ? -1 : 1;
-      return bahtOf(b) - bahtOf(a);
-    });
-    var waiting = points.filter(function(p){ return !isReady(p); })
-      .sort(function(a,b){ return kgOf(b) - kgOf(a); });
-
-    document.getElementById('c-jobs').textContent = jobs.length;
-    document.getElementById('c-kg').textContent = jobs.reduce(function(s,p){ return s + kgOf(p); }, 0).toFixed(1);
-    document.getElementById('c-baht').textContent = '฿' + round5(jobs.reduce(function(s,p){ return s + bahtOf(p); }, 0));
-
-    document.getElementById('c-feed').innerHTML = jobs.length
-      ? jobs.map(jobCard).join('')
-      : '<li class="rounded-xl border border-line px-4 py-6 text-center text-[12.5px] text-muted" style="background:var(--sunken)">ยังไม่มีจุดไหนแตะ 15 กก. ตอนนี้</li>';
-    document.getElementById('c-waiting').innerHTML = waiting.length
-      ? waiting.map(waitingRow).join('')
-      : '<li class="rounded-xl border border-line px-4 py-4 text-center text-[12px] text-muted" style="background:var(--sunken)">ทุกจุดถึงเกณฑ์หมดแล้ว</li>';
-  }
-
-  document.getElementById('c-feed').addEventListener('click', function(e){
-    var btn = e.target.closest('button[data-act]');
-    if (!btn) return;
-    var p = points.filter(function(x){ return x.id === btn.dataset.id; })[0];
-    if (btn.dataset.act === 'speak'){ speak(sayJob(p)); return; }
-    p.job = btn.dataset.act === 'accept' ? 'enroute' : null;
-    renderCollector();
-  });
-
-  // Voice readout for collectors who read slowly (round-3 TC6)
-  function sayJob(p){
-    return p.name + ' ' + p.place + ' · ขับ ' + p.driveKm.toFixed(1) + ' กิโลเมตร · ' +
-      'ขวด ' + p.mix.pet.toFixed(0) + ' กิโล ลัง ' + p.mix.card.toFixed(0) + ' กิโล กระป๋อง ' + p.mix.alu.toFixed(0) + ' กิโล · ' +
-      'แยกมาแล้ว · ได้ประมาณ ' + round5(bahtOf(p)) + ' บาท';
-  }
-  function speak(text){
-    try {
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = 'th-TH'; u.rate = 0.9;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    } catch (e) {}
-  }
-
-  // Per-viewer conveniences: big text, theme, tutorial dismissed (round-3 TC4 TC7)
-  function load(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
-  function save(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
-
-  var bigBtn = document.getElementById('btn-big');
-  function setBig(on){
-    frame.classList.toggle('big', on);
-    bigBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    bigBtn.style.background = on ? 'var(--accent-soft)' : '';
-    bigBtn.style.color = on ? 'var(--accent-ink)' : '';
-    save('bwl-big', on ? '1' : '0');
-  }
-  bigBtn.addEventListener('click', function(){ setBig(!frame.classList.contains('big')); });
-  setBig(load('bwl-big') === '1');
-
-  function setTheme(t){
-    if (t) document.documentElement.setAttribute('data-theme', t);
-    else document.documentElement.removeAttribute('data-theme');
-  }
-  document.getElementById('btn-theme').addEventListener('click', function(){
-    var dark = getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim().toLowerCase() !== '#fbfcfa';
-    var next = dark ? 'light' : 'dark';
-    setTheme(next);
-    save('bwl-theme', next);
-  });
-  setTheme(load('bwl-theme'));
-
-  var tut = document.getElementById('r-tutorial');
-  if (load('bwl-tut') === 'done') tut.classList.add('hidden');
-  document.getElementById('btn-tut').addEventListener('click', function(){
-    tut.classList.add('hidden');
-    save('bwl-tut', 'done');
-  });
-
-  document.getElementById('r-enroute').addEventListener('click', function(e){
-    var btn = e.target.closest('button[data-call]');
-    if (!btn) return;
-    var note = document.getElementById('r-callnote');
-    note.textContent = btn.dataset.call === 'app'
-      ? 'เดโม: จะโทรผ่านแอปหาพี่สมชาย (ไม่เสียค่าโทร)'
-      : 'เดโม: จะโทรเข้าเบอร์ 08x-xxx-1234';
-    note.classList.remove('hidden');
-  });
-
-  document.getElementById('btn-share').addEventListener('click', function(){
-    var text = 'วันนี้ฉันแยกขยะรีไซเคิล ' + (mine.count*2).toFixed(1) + ' กก. ไม่ไปหลุมฝังกลบ ♻️ · Bangkok Waste Lab';
-    var btn = this;
-    if (navigator.share){
-      navigator.share({ text:text }).catch(function(){});
-    } else if (navigator.clipboard){
-      navigator.clipboard.writeText(text).then(function(){ btn.textContent = '✓ คัดลอกข้อความแล้ว'; }, function(){});
-    }
-  });
-
-  document.getElementById('btn-add').addEventListener('click', function(){
-    var wasMet = kgOf(home) >= THRESHOLD;
-    home.mix.pet  = Math.round((home.mix.pet  + MY_BAGS.pet)  * 10) / 10;
-    home.mix.alu  = Math.round((home.mix.alu  + MY_BAGS.alu)  * 10) / 10;
-    home.mix.card = Math.round((home.mix.card + MY_BAGS.card) * 10) / 10;
-    mine.count++;
-    render();
-    if (!wasMet && kgOf(home) >= THRESHOLD){
-      var badge = document.getElementById('r-badge');
-      badge.classList.remove('pop');
-      void badge.offsetWidth;
-      badge.classList.add('pop');
-    }
-  });
-
-  function render(){
-    if (role === 'resident') renderResident(); else renderCollector();
-  }
-
-  renderPrices();
-  setRole('resident');
+  applyTheme();
+  var start = parseInt((location.hash || '').slice(1), 10);
+  go(start >= 0 && start < STEPS.length ? start : 0, false);
+  loop();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fontsReady = true; redraws.forEach(function(f){ f(); }); });
 })();
 </script>
 </body>
