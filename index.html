@@ -164,6 +164,7 @@ dialog ul{ padding-left:18px; margin:4px 0; }
     <button class="tb" id="t-labels" aria-pressed="true">ป้ายชิ้นส่วน</button>
     <button class="tb" id="t-explode" aria-pressed="false">แยกชิ้น</button>
     <button class="tb" id="t-lid" aria-pressed="false">เปิดฝา</button>
+    <a class="tb" href="monitor.html" style="text-decoration:none">แอปติดตามถัง</a>
     <button class="tb" id="t-biz">ใครจ่าย?</button>
     <button class="tb" id="t-theme" aria-label="สลับธีม">◐</button>
   </div>
@@ -194,7 +195,7 @@ dialog ul{ padding-left:18px; margin:4px 0; }
     <li>ต้นทุนฝาต่อชิ้น และใครเป็นเจ้าของ (สมาคมให้ยืม / เช่ารายเดือน / ขาย)?</li>
     <li>กันขโมย/ทำลายฝาอย่างไร — ยึดกับถังหรือกับรั้วบ้าน?</li>
     <li>ถุงไม่มีสติ๊กเกอร์ หรือมีเศษอาหารปน — ปฏิเสธ คิดค่าปรับ หรือแค่ไม่ให้เครดิต?</li>
-    <li>ถังหนึ่งใบใช้ร่วมกี่หลัง และใครเก็บกุญแจสำรองเมื่อแบตหมด?</li>
+    <li>ถังหนึ่งใบใช้ร่วมกี่หลัง และใครเก็บกุญแจสำรองเมื่อถ่านหมด?</li>
   </ul>
 </dialog>
 
@@ -413,20 +414,35 @@ dialog ul{ padding-left:18px; margin:4px 0; }
   // raised grip + brand line
   lidPivot.add(box(0.22, 0.012, 0.05, gfx2, 0, 0.027, D2 - 0.06));
 
-  var solar = new T.Group(); solar.position.set(0, 0.026, D2 / 2 - 0.07); lidPivot.add(solar);
+  // battery compartment: 4 × AA under a screw-down hatch (hatch lifts off in the exploded view)
+  var batt = new T.Group(); batt.position.set(0, 0.024, D2 / 2 - 0.04); lidPivot.add(batt);
+  var battHatch = new T.Group(); batt.add(battHatch);
   (function(){
-    var s = canvasTex(256, 192), x = s.x;
-    x.fillStyle = '#16264A'; x.fillRect(0, 0, 256, 192);
-    x.strokeStyle = '#6E86B8'; x.lineWidth = 2;
-    for(var i = 1; i < 8; i++){ x.beginPath(); x.moveTo(i * 32, 0); x.lineTo(i * 32, 192); x.stroke(); }
-    for(var j = 1; j < 6; j++){ x.beginPath(); x.moveTo(0, j * 32); x.lineTo(256, j * 32); x.stroke(); }
-    x.strokeStyle = '#C9D3E6'; x.lineWidth = 6; x.strokeRect(3, 3, 250, 186);
-    solar.add(box(0.46, 0.008, 0.34, mat('#C9D3E6', { metalness:0.4 }), 0, 0, 0));
-    var top = new T.Mesh(new T.PlaneGeometry(0.45, 0.33), new T.MeshStandardMaterial({ map:s.tex, roughness:0.25, metalness:0.5 }));
-    top.rotation.x = -Math.PI / 2; top.position.y = 0.0045; solar.add(top);
+    batt.add(box(0.2, 0.018, 0.13, gfx2, 0, 0, 0));
+    var cellM = mat('#E8742C', { roughness:0.35, metalness:0.3 }), capM = mat('#B8C0BC', { metalness:0.7, roughness:0.3 });
+    for(var i = 0; i < 4; i++){
+      var z = -0.042 + i * 0.028;
+      var c = cyl(0.0072, 0.0072, 0.05, cellM, 12); c.rotation.z = Math.PI / 2; c.position.set(-0.005, 0.012, z); batt.add(c);
+      var cap = cyl(0.0074, 0.0074, 0.012, capM, 12); cap.rotation.z = Math.PI / 2; cap.position.set(0.026, 0.012, z); batt.add(cap);
+    }
+    var s = canvasTex(256, 160), x = s.x;
+    function d(){
+      x.fillStyle = '#343C39'; x.fillRect(0, 0, 256, 160);
+      x.strokeStyle = '#59625E'; x.lineWidth = 4; rrect(x, 6, 6, 244, 148, 14); x.stroke();
+      x.fillStyle = '#C9D0CB'; x.textAlign = 'center';
+      x.font = '700 40px ' + FONT; x.fillText('ถ่าน AA × 4', 128, 78);
+      x.font = '500 22px ' + FONT; x.fillText('เปลี่ยนเองได้', 128, 116);
+      x.fillStyle = '#8A938E'; [[24, 24], [232, 24], [24, 136], [232, 136]].forEach(function(p){ x.beginPath(); x.arc(p[0], p[1], 7, 0, 7); x.fill(); });
+      s.tex.needsUpdate = true;
+    }
+    d(); redraws.push(d);
+    battHatch.add(box(0.21, 0.006, 0.14, gfx2, 0, 0, 0));
+    var lbl = new T.Mesh(new T.PlaneGeometry(0.2, 0.125), new T.MeshStandardMaterial({ map:s.tex, roughness:0.6 }));
+    lbl.rotation.x = -Math.PI / 2; lbl.position.y = 0.0032; battHatch.add(lbl);
   })();
-  solar.userData.base = solar.position.clone();
-  parts.solar = anchor(solar, -0.15, 0.01, 0.05);
+  battHatch.position.y = 0.023; battHatch.userData.base = battHatch.position.clone();
+  batt.userData.base = batt.position.clone();
+  parts.batt = anchor(batt, -0.1, 0.02, 0.0);
 
   var ledMat = new T.MeshStandardMaterial({ color:0x222222, emissive:0x2F6BFF, emissiveIntensity:1.2, roughness:0.3 });
   var led = box(0.42, 0.014, 0.012, ledMat, 0, 0.0, D2 + 0.012); lidPivot.add(led);
@@ -628,7 +644,7 @@ dialog ul{ padding-left:18px; margin:4px 0; }
   function applyExplode(){
     var e = state.explode;
     lidPivot.position.copy(lidPivotBase).add(new T.Vector3(0, 0.34 * e, 0));
-    solar.position.copy(solar.userData.base).add(new T.Vector3(0, 0.16 * e, 0));
+    battHatch.position.copy(battHatch.userData.base).add(new T.Vector3(0, 0.07 * e, 0));
     sensor.position.copy(sensor.userData.base).add(new T.Vector3(0, -0.14 * e, 0));
     latch.position.copy(latch.userData.base).add(new T.Vector3(0, -0.08 * e, 0.06 * e));
     plate.position.copy(plate.userData.base).add(new T.Vector3(0, -0.03 * e, 0.24 * e));
@@ -701,7 +717,7 @@ dialog ul{ padding-left:18px; margin:4px 0; }
     { k:'plate',  t:'QR พิมพ์บนฝา', s:'มือถือสแกน → ปลดล็อก', dx:-150, dy:70 },
     { k:'screen', t:'จอ e-ink', s:'สถานะ + % ความเต็ม', dx:150, dy:60 },
     { k:'led',    t:'ไฟสถานะ', s:'ฟ้า=ล็อก เขียว=เปิด ส้ม=เต็ม', dx:-170, dy:-6 },
-    { k:'solar',  t:'โซลาร์เซลล์ + แบต', s:'ไม่ต้องเดินสายไฟ', dx:-210, dy:-25 },
+    { k:'batt',   t:'ถ่าน AA × 4', s:'เปลี่ยนเองได้ ไม่ต้องเดินสายไฟ', dx:-210, dy:-25 },
     { k:'latch',  t:'ล็อกไฟฟ้า', s:'โซลินอยด์ใต้ขอบฝา', dx:150, dy:2 },
     { k:'clamp',  t:'ขาหนีบ universal', s:'ใส่ถังล้อ 120/240 ลิตรเดิมได้', dx:150, dy:40 },
     { k:'hinge',  t:'บานพับ + มอเตอร์ยก', s:'เปิดเอง ปิดเองเมื่อครบเวลา', dx:130, dy:-80 },
@@ -768,7 +784,7 @@ dialog ul{ padding-left:18px; margin:4px 0; }
       cfg:{ bin:[], install:true },
       body:function(){ return '<h2 class="disp">ถอดฝาเดิม → วางฝาใหม่ → ขาหนีบล็อก</h2>' +
         '<ul><li>ใช้กับถังล้อมาตรฐาน 120/240 ลิตรที่บ้านมีอยู่ — <b>ไม่ต้องซื้อถังใหม่</b></li><li>ขาหนีบ 4 จุดเกาะใต้ขอบถัง ไม่ต้องเจาะ</li>' +
-        '<li>ไฟจากโซลาร์เซลล์บนฝา → ไม่ต้องเดินสายไฟ</li><li>จับคู่ฝากับบ้าน: สแกน QR ครั้งแรกในแอป</li></ul>' +
+        '<li>ใช้ถ่าน AA ทั่วไป 4 ก้อน → ไม่ต้องเดินสายไฟ เปลี่ยนเองได้</li><li>จับคู่ฝากับบ้าน: สแกน QR ครั้งแรกในแอป</li></ul>' +
         '<div class="note assume">ต้องทดสอบ: ขอบถังแต่ละยี่ห้อต่างกันแค่ไหน</div>'; },
       phone:function(){ return '<h4>ติดตั้งฝาใหม่</h4><div class="li"><span>1. ถอดฝาเดิม</span><b>✓</b></div><div class="li"><span>2. วางฝา + หนีบ</span><b>✓</b></div>' +
         '<div class="li"><span>3. สแกนจับคู่</span><b>…</b></div><span class="pbtn">ผูกกับบ้าน ' + HOUSE + '</span>'; },

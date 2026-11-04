@@ -15,7 +15,14 @@ station can credit the right household.
 
 ## Files
 
-- `index.html` — the whole prototype: Three.js scene + HTML overlay. No build step.
+- `index.html` — the 3D lid prototype: Three.js scene + HTML overlay. No build step.
+- `monitor.html` — the collector-app prototype (รถรับซื้อ): hand-drawn SVG map of 10 bins with
+  fill rings, ≥80% bins get a nearest-neighbour pickup order (dashed line, not real roads),
+  list + filters, detail sheet (fill, est. kg, battery, last opened), "▶ จำลองเวลา" fills bins
+  and toasts when one crosses 80%. Same tokens/theme key (`lid-theme`) as `index.html`;
+  `KG_FULL = 17` kg per full bin is an assumption. Linked both ways ("แอปติดตามถัง" / "3D").
+- `ฝาถังอัจฉริยะ — จุดทิ้งหน้าบ้าน.pptx` — class deck for this concept (images captured from
+  `index.html`; fonts are Leelawadee UI because Prompt/Sarabun aren't installed).
 - `research/user-tests-round3.md` — notes from earlier user tests (TC1–TC10).
 - The old 2D app / wireframe board / `theme.css` were removed; they're in git history
   (before the "3D smart lid" commit) if needed.
@@ -32,7 +39,7 @@ and Google Fonts.
   Output is linear (no sRGB encoding) on purpose so hex colors render as written.
 - Models are built from primitives in one IIFE: street, `bin` (generic wheelie bin),
   `oldLid`, `lid` (collar, 4 `clamps`, front `plate` with e-ink `screen` canvas, `hinge`,
-  `lidPivot` → solar, LED strip, `latch`, fill `sensor`), bags (`makeBag`, lathe or cardboard
+  `lidPivot` → battery box (`batt`, 4 × AA, `battHatch` lifts in explode), LED strip, `latch`, fill `sensor`), bags (`makeBag`, lathe or cardboard
   bundle, sticker canvas in `qr` or `pen` mode), `truck`, 3D `phone` + scan `beam`.
 - Canvas textures (fake QR, sticker, e-ink screen) redraw once web fonts load (`redraws`).
 - Animation: tiny tween system (`tween`, `wait`, `seq`) cancelled by bumping `GEN`.
