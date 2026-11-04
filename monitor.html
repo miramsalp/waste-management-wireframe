@@ -46,6 +46,7 @@ button{ font:inherit; color:inherit; cursor:pointer; }
   body{ display:grid; place-items:center; padding:24px; }
   .frame{ width:430px; height:min(880px, calc(100vh - 48px)); min-height:0; border:1px solid var(--line-strong); border-radius:30px; overflow:hidden; box-shadow:0 30px 70px -30px rgba(0,0,0,.45); }
   .desk{ display:block !important; }
+  .frame .sheet, .frame .toast{ position:absolute; max-width:none; }
 }
 .desk{ display:none; position:fixed; left:24px; top:24px; max-width:260px; color:var(--muted); font-size:13px; }
 .desk a{ color:var(--accent-ink); }
@@ -107,7 +108,7 @@ header h1{ margin:0; font-size:17px; line-height:1.2; }
 .tag.bat{ background:var(--blue-soft); color:var(--blue); }
 .tag.rt{ background:var(--ink); color:var(--surface); }
 
-.sheet{ position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-top:1px solid var(--line-strong); border-radius:20px 20px 0 0;
+.sheet{ position:fixed; left:0; right:0; bottom:0; max-width:430px; margin:0 auto; background:var(--surface); border-top:1px solid var(--line-strong); border-radius:20px 20px 0 0;
   box-shadow:0 -12px 32px -18px rgba(0,0,0,.5); padding:10px 18px 18px; transform:translateY(105%); transition:transform .28s cubic-bezier(.2,.8,.3,1); z-index:10; max-height:78%; overflow-y:auto; }
 .sheet.open{ transform:none; }
 .grab{ width:38px; height:4px; border-radius:4px; background:var(--line-strong); margin:0 auto 10px; }
@@ -122,7 +123,7 @@ header h1{ margin:0; font-size:17px; line-height:1.2; }
 .acts{ display:flex; gap:8px; margin-top:12px; }
 .acts .btn{ flex:1; }
 
-.toast{ position:absolute; left:16px; right:16px; top:64px; z-index:20; background:var(--ink); color:var(--surface); border-radius:12px; padding:10px 12px; font-size:13px;
+.toast{ position:fixed; left:16px; right:16px; top:64px; max-width:398px; margin:0 auto; z-index:20; background:var(--ink); color:var(--surface); border-radius:12px; padding:10px 12px; font-size:13px;
   box-shadow:var(--shadow); transform:translateY(-20px); opacity:0; transition:.25s; pointer-events:none; }
 .toast.show{ transform:none; opacity:1; }
 
